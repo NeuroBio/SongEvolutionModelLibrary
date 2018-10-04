@@ -19,8 +19,15 @@ namespace SongEvolutionModelLibrary
         StringBuilder ChanceForget = new StringBuilder();
         StringBuilder MaleSong = new StringBuilder();
         StringBuilder FemaleSong = new StringBuilder();
-        public void Write(SimParams par, Population pop){
+        public void Write(SimParams par, Population pop, bool All=true){
             //save the data for each step
+            if(All){
+                WriteAll(par, pop);
+            }else{
+                WriteAve(par, pop);
+            }
+        }
+        private void WriteAll(SimParams par, Population pop){
             SylRep.AppendLine(string.Join(",", pop.SyllableRepertoire));
             if(par.SaveMatch){
                 Match.AppendLine(string.Join(",", pop.Match));
@@ -61,7 +68,44 @@ namespace SongEvolutionModelLibrary
                 FemaleSong.AppendLine(string.Join(",", SylCount));
             }
         }
-        public void Output(SimParams par, String filePath, string tag){
+        private void WriteAve(SimParams par, Population pop){
+            SylRep.AppendLine(pop.SyllableRepertoire.Average().ToString());
+            if(par.SaveMatch){
+                Match.AppendLine(pop.Match.Average().ToString());
+            }
+            if(par.SaveAge){
+                Age.AppendLine(pop.Age.Average().ToString());
+            }
+            if(par.SaveLearningThreshold){
+                LearningThreshold.AppendLine(pop.LearningThreshold.Average().ToString());
+            }
+            if(par.SaveAccuracy){
+                Accuracy.AppendLine(pop.Accuracy.Average().ToString());
+            }
+            if(par.SaveChancetoForget){
+                ChanceForget.AppendLine(pop.ChanceForget.Average().ToString());
+            }
+            if(par.SaveChancetoInvent){
+                ChanceInvent.AppendLine(pop.ChanceInvent.Average().ToString());
+            }
+            if(par.SaveMSong){
+                List<int> MSyls = pop.MaleSong.SelectMany(x => x).ToList();
+                int[] SylCount = Enumerable.Repeat(0, par.MaxSyllableRepertoireSize).ToArray();
+                for(int i=0; i<MSyls.Count;i++){
+                    SylCount[MSyls[i]] += 1;
+                }
+                MaleSong.AppendLine(SylCount.Average().ToString());
+            }
+            if(par.SaveFSong){
+                List<int> FSyls = pop.FemaleSong.SelectMany(x => x).ToList();
+                int[] SylCount = Enumerable.Repeat(0, par.MaxSyllableRepertoireSize).ToArray();
+                for(int i=0; i<FSyls.Count;i++){
+                    SylCount[FSyls[i]] += 1;
+                }
+                FemaleSong.AppendLine(SylCount.Average().ToString());
+            }
+        }
+        public void Output(SimParams par, String filePath, string tag, bool WritePar = false){
             //Make the final .csvs
             File.WriteAllText(filePath+"/"+tag+"SylRep.csv", SylRep.ToString());
             if(par.SaveMatch){
@@ -92,7 +136,9 @@ namespace SongEvolutionModelLibrary
             if(par.SaveFSong){
                 File.WriteAllText(filePath+"/"+tag+"FSong.csv", FemaleSong.ToString());
             }
+            if(WritePar){
             WriteParams(par, filePath, tag);
+            }
         }
         private void WriteParams(SimParams par, String filePath, string tag){
             StringBuilder Par = new StringBuilder();
