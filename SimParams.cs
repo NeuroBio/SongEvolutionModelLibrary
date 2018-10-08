@@ -115,7 +115,7 @@ namespace SongEvolutionModelLibrary{
                     MatchUniform=System.Convert.ToBoolean(Params[46]);
                     //MatchScale=System.Convert.ToInt32(Params[47]);
                     NumDialects=System.Convert.ToInt32(Params[48]);
-                    MaleDialects=Params[49];
+                    MaleDialects=Params[49].Replace("\r", "");
                     FemaleEvolution=System.Convert.ToBoolean(Params[50]);
                     ChooseMate=System.Convert.ToBoolean(Params[51]);
                     SaveMatch=System.Convert.ToBoolean(Params[52]);
