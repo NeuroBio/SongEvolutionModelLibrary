@@ -63,47 +63,61 @@ namespace SongEvolutionModelLibrary
         int[] vacant, List<int> notVacant){
             //Get Learners and set up for each learning style                                                        
             List<int> Learners = GetLearners(par, pop, notVacant);
-            List<int>[] TutorSyls;
+            List<int>[] AddSyls;
+            List<int>[] LoseSyls;
             if(par.ConsensusStrategy){
                 List<int>[] Tutors = ChooseMultipleTutors(par, pop, Learners,
                                                     notVacant, par.NumTutorConsensusStrategy);
-                TutorSyls = ConsensusLearning(par, pop, Tutors, Learners);
+                var Results = ConsensusLearning(par, pop, Tutors, Learners);
+                AddSyls = Results.AddSyls;
+                LoseSyls = Results.ConsensusSongs;
             }else{//Add&|Forget Learning
                 int[] Tutors = ChooseTutors(par, pop, Learners, notVacant);
-                TutorSyls = ListeningTest(par, pop, Tutors);
+                AddSyls = ListeningTest(par, pop, Tutors);
+                LoseSyls = AddSyls;
             }
 
             //Add and/or remove syllables as needed and update song-related traits
             if(par.Add){
-               AddSyllables (par, pop, Learners, TutorSyls);
+               AddSyllables (par, pop, Learners, AddSyls);
             }
             if(par.Forget){
-               ForgetSyllables (par, pop, Learners, TutorSyls);
+               ForgetSyllables (par, pop, Learners, LoseSyls);
             }
             UpdateSongTraits(par, pop, Learners);         
             return(pop);
         }
 
         //Learning Accessory functions
-        private static List<int>[] ConsensusLearning(SimParams par, Population pop,
+        private static ConsensusResults ConsensusLearning(SimParams par, Population pop,
         List<int>[] Tutors, List<int> learners){
             //Create a consensus based on songs from several males
             List<int>[] ConsensusSongs = new List<int>[learners.Count];
+            List<int>[] AddSyls = new List<int>[learners.Count];
             List<int>[] AllSongs;
             List<int> CollapsedSongs;
-            List<int> Syllables;
             for(int i=0;i<learners.Count;i++){
                 ConsensusSongs[i] = new List<int>{};
+                AddSyls[i] = new List<int>{};
                 AllSongs = ListeningTest(par, pop, Tutors[i].ToArray());
                 CollapsedSongs = AllSongs.SelectMany(x => x).ToList();
-                Syllables = CollapsedSongs.Distinct().ToList();
-                for(int j=0;j<Syllables.Count();j++){
-                    if(par.NextFloat() < CollapsedSongs.Count(x => x==Syllables[j]/par.NumTutorConsensusStrategy)){
-                      ConsensusSongs[i].Add(Syllables[j]);  
+                ConsensusSongs[i] = CollapsedSongs.Distinct().ToList();
+                for(int j=0;j<ConsensusSongs[i].Count();j++){
+                    if(par.NextFloat() < CollapsedSongs.Count(x => x==ConsensusSongs[i][j])/par.NumTutorConsensusStrategy){
+                      AddSyls[i].Add(ConsensusSongs[i][j]);  
                     }
                 }
             }
-            return(ConsensusSongs);           
+            ConsensusResults Returnable = new ConsensusResults(AddSyls, ConsensusSongs);
+            return(Returnable);           
+        }
+        private struct ConsensusResults{
+            public List<int>[] AddSyls;
+            public List<int>[] ConsensusSongs;
+            public ConsensusResults (List<int>[] addSyls, List<int>[] consensusSongs){
+                AddSyls = addSyls;
+                ConsensusSongs = consensusSongs;
+            }
         }
         private static List<int> GetLearners(SimParams par, Population pop, List<int> notVacant){
             List<int> Capable = TestLearningThreshold(par, pop, notVacant);

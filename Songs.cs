@@ -208,16 +208,18 @@ namespace SongEvolutionModelLibrary
             //Assign remaining info
             Match[femaleSong.Length-1] = GetMatch(par, maleSong[Available[0]], femaleSong[ScrambleFemales[femaleSong.Length-1]]);
             Order[femaleSong.Length-1] = Available[0];
-            AssignResults Results = new AssignResults();
-            Results.Match = Match;
-            Results.MaleOrder = Order;
-            Results.FemaleOrder = ScrambleFemales;
+            AssignResults Results = new AssignResults(Match, Order, ScrambleFemales);
             return(Results);
         }
         private struct AssignResults{
             public float[] Match;
             public int[] MaleOrder;
             public int[] FemaleOrder;
+            public AssignResults(float[] match, int[] maleOrder, int[] femaleOrder){
+                Match = match;
+                MaleOrder= maleOrder;
+                FemaleOrder=femaleOrder;
+            }
 
         }
     }

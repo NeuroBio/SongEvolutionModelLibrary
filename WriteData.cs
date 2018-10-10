@@ -8,6 +8,7 @@ using System.IO;
 namespace SongEvolutionModelLibrary
 {
     public class WriteData{
+
         StringBuilder Age = new StringBuilder();
         StringBuilder SylRep = new StringBuilder();
         StringBuilder Match = new StringBuilder();
@@ -105,7 +106,7 @@ namespace SongEvolutionModelLibrary
                 FemaleSong.AppendLine(SylCount.Average().ToString());
             }
         }
-        public void Output(SimParams par, String filePath, string tag, bool WritePar = false){
+        public void Output(SimParams par, String filePath, string tag, bool WritePar = true){
             //Make the final .csvs
             File.WriteAllText(filePath+"/"+tag+"SylRep.csv", SylRep.ToString());
             if(par.SaveMatch){
@@ -136,10 +137,12 @@ namespace SongEvolutionModelLibrary
             if(par.SaveFSong){
                 File.WriteAllText(filePath+"/"+tag+"FSong.csv", FemaleSong.ToString());
             }
+
+            //Save parameters is desired
             if(WritePar){
             WriteParams(par, filePath, tag);
             }
-        }
+        }        
         private void WriteParams(SimParams par, String filePath, string tag){
             StringBuilder Par = new StringBuilder();
             Par.AppendLine($"R={par.Rows}");
