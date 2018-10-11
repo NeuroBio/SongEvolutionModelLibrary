@@ -129,7 +129,8 @@ namespace SongEvolutionModelLibrary{
                     SaveFSong=System.Convert.ToBoolean(Params[60]);
                     //SimStep=System.Convert.ToInt32(Params[61]);
                     NumSim=System.Convert.ToInt32(Params[62]);
-                    Seed=System.Convert.ToInt32(Params[63]);
+                    Seed=Params[63]=="NA\r"?
+                                0:System.Convert.ToInt32(Params[63]);
 
             }else{
                 Rows = rows; Cols = cols; NumBirds = rows*cols; Steps = steps;

@@ -122,7 +122,7 @@ namespace SongEvolutionModelLibrary
         private static List<int> GetLearners(SimParams par, Population pop, List<int> notVacant){
             List<int> Capable = TestLearningThreshold(par, pop, notVacant);
             Capable = CheckEncounter(par, Capable);
-            if(Capable.Count == 0){throw new Exception("There were no learners.");}
+            if(Capable.Count == 0){Console.WriteLine("Warning: There were no learners.");}//throw new Exception("There were no learners.");}
             return(Capable);
         }
         private static List<int> TestLearningThreshold(SimParams par, Population pop,
@@ -172,7 +172,7 @@ namespace SongEvolutionModelLibrary
              for(int i=0;i<learners.Count;i++){
                 Lose = pop.MaleSong[learners[i]].Except(tutorSyls[i]).ToList();
                 pop.MaleSong[learners[i]] = DropSyllables(par,pop.MaleSong[learners[i]],
-                                                            Lose, pop.ChanceInvent[i]);
+                                                            Lose, pop.ChanceForget[i]);
             }
             return(pop);
         }
