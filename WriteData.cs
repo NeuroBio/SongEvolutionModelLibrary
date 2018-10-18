@@ -210,7 +210,7 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"nSim={par.NumSim}");
             Par.AppendLine($"Seed={par.Seed}");
 
-            File.WriteAllText(filePath+"/"+tag+"Parameters.txt", Par.ToString());
+            File.WriteAllText(filePath+"/"+tag+"Parameters.semp", Par.ToString());
         }
         public void ConCat(WriteData New, SimParams par){
             SylRep.Append(New.SylRep);
