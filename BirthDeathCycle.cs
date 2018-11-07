@@ -32,6 +32,11 @@ namespace SongEvolutionModelLibrary
                 pop.ReplaceBird(par, FatherInd[i], Vacant[i]);
             }
 
+            //allow for chicks to overlearn, update match and sylrep
+            if(par.OverLearn == true){
+                Learning.OverLearn(par, pop, Vacant, NotVacant);
+            }
+
             /*Allow for the female song to evolve and/or
             let them pick new mates if old mate deceased*/
             if(par.FemaleEvolution){
@@ -44,12 +49,7 @@ namespace SongEvolutionModelLibrary
             if(par.ChooseMate){
                 Songs.ChooseMates(par, pop);
             }
-            
-            //allow for chicks to overlearn, update match and sylrep
-            if(par.OverLearn == true){
-                Learning.OverLearn(par, pop, Vacant, NotVacant);
-            }
-            
+                      
             //update survival probability
             if(par.AgeDeath){
                 UpdateDeathProbabilities(par, pop, FatherInd);
@@ -58,7 +58,7 @@ namespace SongEvolutionModelLibrary
         }
 
         //Death
-        public static int[] AgeDeath(SimParams par, Population pop){
+        private static int[] AgeDeath(SimParams par, Population pop){
             //Send birds to the circus based on retirement age
             List<int> DeadIndex = new List<int> {};
             float[] PickChance = LearningPenalty(par, pop.LearningThreshold);
@@ -112,16 +112,16 @@ namespace SongEvolutionModelLibrary
             return(DeadIndex.ToArray());
         }
         private static int[] RandomDeath(SimParams par, Population pop){
-            int numLostBirds = (int)Math.Floor(par.NumBirds*par.PercentDeath);
             float[] PickChance = LearningPenalty(par, pop.LearningThreshold);
+            int numLostBirds = (int)Math.Floor(par.NumBirds*par.PercentDeath);
             int[] LostBirds = par.randomSampleUnequal(PickChance, numLostBirds,false);
             return(LostBirds);
         }
-        private static float[] LearningPenalty(SimParams par, float[] LearnThreshold){
+        private static float[] LearningPenalty(SimParams par, float[] learnThreshold){
             float Base = par.LearningPenalty/(par.MaxAge-1);
             float[] PickChance = new float[par.NumBirds];
             for(int i=0;i<par.NumBirds;i++){
-                PickChance[i] = Base*(LearnThreshold[i]-1)+1;  
+                PickChance[i] = Base*(learnThreshold[i]-1)+1;  
             }
                 List<int> Cheaters = Enumerable.Range(0, PickChance.Length).Where(x => PickChance[x] < 1).ToList();
                 for(int i=0;i<Cheaters.Count;i++){  
@@ -173,7 +173,7 @@ namespace SongEvolutionModelLibrary
             return(Fathers);
         }
         private static int[] ChooseFemaleFathers(SimParams par, Population pop,
-        int[] vacant, List<int> notVacant, int[] MaleFathers){       
+        int[] vacant, List<int> notVacant, int[] maleFathers){       
             /*Picks fathers to sire chicks into vacancies,
             Uses only living males.
             It is likely for high quality males to sire multiple
@@ -198,7 +198,7 @@ namespace SongEvolutionModelLibrary
             if(par.LocalBreeding){
                 for(int i=0;i<Fathers.Length;i++){
                     UnavailableNoMateFather = Unavailable;
-                    UnavailableNoMateFather.Remove(MaleFathers[i]);
+                    UnavailableNoMateFather.Remove(maleFathers[i]);
                     Fathers[i] = Locations.GetLocalBirds(par, pop, vacant[i],
                                                         UnavailableNoMateFather, probs: Probability)[0];
                 }
@@ -213,7 +213,7 @@ namespace SongEvolutionModelLibrary
                     //PotentialFathersNoMateFather = PotentialFathers.ToList();
                     //PotentialFathersNoMateFather.Remove(MaleFathers[i]);
                     PotenProbsTemp = PotenProbs.ToArray();
-                    PotenProbsTemp[MaleFathers[i]] = 0;
+                    PotenProbsTemp[maleFathers[i]] = 0;
                     /*for(int j=0;j<PotenProbs.Length;j++){
                         PotenProbs[j] = Probability[PotentialFathers[j]];
                     }*/
@@ -222,52 +222,52 @@ namespace SongEvolutionModelLibrary
             }
             return(Fathers);
         }
-        public static float[] ReproductiveProbability(SimParams par, Population pop,
-        List<int> UsableMales){
+        private static float[] ReproductiveProbability(SimParams par, Population pop,
+        List<int> usableMales){
             //Get the bonus for each category, combine, and return
             //Choices <- PotentialFathers$Males[UsableInd,]
-            float[] FullBonus = new float[UsableMales.Count];
+            float[] FullBonus = new float[usableMales.Count];
             //Noise
-            float[] NoiseBonus = Enumerable.Repeat(par.NoisePreference, UsableMales.Count).ToArray();
+            float[] NoiseBonus = Enumerable.Repeat(par.NoisePreference, usableMales.Count).ToArray();
             //Rep
-            float[] RepBonus = new float[UsableMales.Count];
+            float[] RepBonus = new float[usableMales.Count];
             if(par.RepertoireSizePreference != 0){
-                float[] Rep = new float[UsableMales.Count];
+                float[] Rep = new float[usableMales.Count];
                 if(par.LogScale){
-                    for(int i=0;i<UsableMales.Count;i++){
-                        Rep[i] = (float)Math.Log(pop.SyllableRepertoire[UsableMales[i]]);
+                    for(int i=0;i<usableMales.Count;i++){
+                        Rep[i] = (float)Math.Log(pop.SyllableRepertoire[usableMales[i]]);
                     } 
                 }else{
-                    for(int i=0;i<UsableMales.Count;i++){
-                        Rep[i] = pop.SyllableRepertoire[UsableMales[i]];
+                    for(int i=0;i<usableMales.Count;i++){
+                        Rep[i] = pop.SyllableRepertoire[usableMales[i]];
                     }
                 }
                 float Worst = Rep.Min();
                 float Best = Rep.Max();
                 if(Worst == Best){
-                  RepBonus = Enumerable.Repeat(par.RepertoireSizePreference, UsableMales.Count).ToArray();  
+                  RepBonus = Enumerable.Repeat(par.RepertoireSizePreference, usableMales.Count).ToArray();  
                 }else{
                     float Fraction = 1/(Best - Worst);
-                    for(int i=0;i<UsableMales.Count;i++){
+                    for(int i=0;i<usableMales.Count;i++){
                         RepBonus[i] = ((Rep[i] - Worst)*Fraction)*par.RepertoireSizePreference;
                     }
 
                 }
-            }else{RepBonus = Enumerable.Repeat(0f, UsableMales.Count).ToArray();}
+            }else{RepBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}
             
             //Match
-            float[] MatBonus = new float[UsableMales.Count];
+            float[] MatBonus = new float[usableMales.Count];
             if(par.MatchPreferenece != 0){
                 float Bonus;
-                for(int i=0;i<UsableMales.Count;i++){
-                    Bonus = par.MatchPreferenece*pop.Match[UsableMales[i]];
+                for(int i=0;i<usableMales.Count;i++){
+                    Bonus = par.MatchPreferenece*pop.Match[usableMales[i]];
                     if(Bonus < .001){Bonus = .001f;}
                     MatBonus[i] = Bonus;
                 }
-            }else{MatBonus = Enumerable.Repeat(0f, UsableMales.Count).ToArray();}
+            }else{MatBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}
 
             //Merge
-            for(int i=0;i<UsableMales.Count;i++){
+            for(int i=0;i<usableMales.Count;i++){
                 FullBonus[i] = NoiseBonus[i] + RepBonus[i] + MatBonus[i]; 
             }
             return(FullBonus);
@@ -276,9 +276,6 @@ namespace SongEvolutionModelLibrary
         private static Population UpdateDeathProbabilities(SimParams par, Population pop, 
         int[] fatherInd){
             //get death probs for next step
-            if(!par.AgeDeath){
-                return(pop);
-            }
             if(pop.SurvivalChance.Count>2){
                 for(int i=par.MaxAge;i>1;i--){
                     pop.SurvivalChance[i] = pop.SurvivalChance[i-1]; 

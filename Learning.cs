@@ -11,14 +11,14 @@ namespace SongEvolutionModelLibrary
 
         //Main process
         public static List<int> CoreLearningProcess(SimParams par, Population pop,
-        int Learner, List<int> LearnerSong, List<int> TutorSong){
+        int learner, List<int> learnerSong, List<int> tutorSong){
             //Copy Tutor Syllables
             List<float> Rolls = new List<float> {};
             float AccRoll;
-            for(int i=0;i<TutorSong.Count;i++){
+            for(int i=0;i<tutorSong.Count;i++){
                 AccRoll = par.NextFloat();
-                if(AccRoll < pop.Accuracy[Learner]){//Correct
-                    LearnerSong.Add(TutorSong[i]);
+                if(AccRoll < pop.Accuracy[learner]){//Correct
+                    learnerSong.Add(tutorSong[i]);
                 }else{Rolls.Add(AccRoll);}
             }
 
@@ -26,8 +26,8 @@ namespace SongEvolutionModelLibrary
             //Innovation
             if(Rolls.Count>0){
                 int Innovation = 0;
-                float InventThresh = (pop.Accuracy[Learner]+pop.ChanceInvent[Learner]-1)
-                                        /pop.ChanceInvent[Learner];
+                float InventThresh = (pop.Accuracy[learner]+pop.ChanceInvent[learner]-1)
+                                        /pop.ChanceInvent[learner];
                 for(int i=0;i<Rolls.Count;i++){
                     if(Rolls[i] >= InventThresh){
                     Innovation += 1;
@@ -36,26 +36,26 @@ namespace SongEvolutionModelLibrary
                 if(Innovation > 0){
                     int[] NewSyls;
                     HashSet<int> AvailableSyllables = new HashSet<int>(par.AllSyls);
-                    AvailableSyllables.ExceptWith(Enumerable.Concat(LearnerSong,TutorSong));
+                    AvailableSyllables.ExceptWith(Enumerable.Concat(learnerSong,tutorSong));
                     if(Innovation >= AvailableSyllables.Count){//Not enough syls for sampling
                         NewSyls = AvailableSyllables.ToArray();
                     }else{// Enough syls for sampling
                         NewSyls=par.randomSampleEqualNoReplace(AvailableSyllables.ToList(),Innovation);
                     }
-                        LearnerSong.AddRange(NewSyls);
+                        learnerSong.AddRange(NewSyls);
                 }//Otherwise no innovation occured
             }//Otherwise no mistakes were made
-            return(LearnerSong);    
+            return(learnerSong);    
         }
 
         //Top Level Organizers
         public static List<int> VerticalLearning(SimParams par, Population pop,
-        int FatherInd, int ChickInd){
+        int fatherInd, int chickInd){
             List<int> NewSong = new List<int>{};
-            if(pop.LearningThreshold[ChickInd] < par.VerticalLearningCutOff){
+            if(pop.LearningThreshold[chickInd] < par.VerticalLearningCutOff){
                 return(NewSong);    
             }
-            List<int> ChickSong = CoreLearningProcess(par, pop, ChickInd, NewSong, pop.MaleSong[FatherInd]);
+            List<int> ChickSong = CoreLearningProcess(par, pop, chickInd, NewSong, pop.MaleSong[fatherInd]);
             return(ChickSong);
         }
 
@@ -90,7 +90,7 @@ namespace SongEvolutionModelLibrary
 
         //Learning Accessory functions
         private static ConsensusResults ConsensusLearning(SimParams par, Population pop,
-        List<int>[] Tutors, List<int> learners){
+        List<int>[] tutors, List<int> learners){
             //Create a consensus based on songs from several males
             List<int>[] ConsensusSongs = new List<int>[learners.Count];
             List<int>[] AddSyls = new List<int>[learners.Count];
@@ -99,7 +99,7 @@ namespace SongEvolutionModelLibrary
             for(int i=0;i<learners.Count;i++){
                 ConsensusSongs[i] = new List<int>{};
                 AddSyls[i] = new List<int>{};
-                AllSongs = ListeningTest(par, pop, Tutors[i].ToArray());
+                AllSongs = ListeningTest(par, pop, tutors[i].ToArray());
                 CollapsedSongs = AllSongs.SelectMany(x => x).ToList();
                 ConsensusSongs[i] = CollapsedSongs.Distinct().ToList();
                 for(int j=0;j<ConsensusSongs[i].Count();j++){
@@ -176,11 +176,11 @@ namespace SongEvolutionModelLibrary
             }
             return(pop);
         }
-        private static Population UpdateSongTraits(SimParams par, Population pop, List<int> Learners){
-            for(int i=0;i<Learners.Count;i++){
-                pop.SyllableRepertoire[Learners[i]] = pop.MaleSong[Learners[i]].Count;
+        private static Population UpdateSongTraits(SimParams par, Population pop, List<int> learners){
+            for(int i=0;i<learners.Count;i++){
+                pop.SyllableRepertoire[learners[i]] = pop.MaleSong[learners[i]].Count;
                 if(par.MatchPreferenece != 0 || par.SaveMatch){
-                    pop.Match[Learners[i]] = Songs.GetMatch(par, pop.MaleSong[Learners[i]], pop.FemaleSong[Learners[i]]);
+                    pop.Match[learners[i]] = Songs.GetMatch(par, pop.MaleSong[learners[i]], pop.FemaleSong[learners[i]]);
                 }
             }
             return(pop);
@@ -277,15 +277,15 @@ namespace SongEvolutionModelLibrary
             }
             return(TutorSyls);
         }
-        private static List<int> DropSyllables(SimParams par, List<int> Song,
-        List<int> DroppableSyls, float ChanceForget){
+        private static List<int> DropSyllables(SimParams par, List<int> song,
+        List<int> droppableSyls, float chanceForget){
             //Remove syllables not heard from tutor based on ChanceForget
-            for(int i = 0;i<DroppableSyls.Count;i++){
-                if(par.NextFloat() < ChanceForget){
-                    Song.Remove(DroppableSyls[i]);
+            for(int i = 0;i<droppableSyls.Count;i++){
+                if(par.NextFloat() < chanceForget){
+                    song.Remove(droppableSyls[i]);
                 }
             }
-            return(Song);
+            return(song);
         }
 
         //Misc     

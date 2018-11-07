@@ -20,6 +20,8 @@ namespace SongEvolutionModelLibrary
         StringBuilder ChanceForget = new StringBuilder();
         StringBuilder MaleSong = new StringBuilder();
         StringBuilder FemaleSong = new StringBuilder();
+
+
         public void Write(SimParams par, Population pop, bool All=true){
             //save the data for each step
             if(All){
@@ -106,7 +108,7 @@ namespace SongEvolutionModelLibrary
                 FemaleSong.AppendLine(SylCount.Average().ToString());
             }
         }
-        public void Output(SimParams par, String filePath, string tag, bool WritePar = true){
+        public void Output(SimParams par, string filePath, string tag, bool writePar = true){
             //Make the final .csvs
             File.WriteAllText(filePath+"/"+tag+"SylRep.csv", SylRep.ToString());
             if(par.SaveMatch){
@@ -139,11 +141,11 @@ namespace SongEvolutionModelLibrary
             }
 
             //Save parameters is desired
-            if(WritePar){
+            if(writePar){
             WriteParams(par, filePath, tag);
             }
         }        
-        private void WriteParams(SimParams par, String filePath, string tag){
+        private void WriteParams(SimParams par, string filePath, string tag){
             StringBuilder Par = new StringBuilder();
             Par.AppendLine($"R={par.Rows}");
             Par.AppendLine($"C={par.Cols}");
@@ -211,39 +213,37 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"Seed={par.Seed}");
 
             File.WriteAllText(filePath+"/"+tag+"Parameters.semp", Par.ToString());
-        }
-        public void ConCat(WriteData New, SimParams par){
-            SylRep.Append(New.SylRep);
+        }      
+        public void ConCat(SimParams par, WriteData newData){
+            SylRep.Append(newData.SylRep);
             if(par.SaveMatch){
-                Match.Append(New.Match);
+                Match.Append(newData.Match);
             }
             if(par.SaveAge){
-                Age.Append(New.Age);
+                Age.Append(newData.Age);
             }
             if(par.SaveNames){
-                Name.Append(New.Name);
-                FatherName.Append(New.FatherName);
+                Name.Append(newData.Name);
+                FatherName.Append(newData.FatherName);
             }
             if(par.SaveLearningThreshold){
-                LearningThreshold.Append(New.LearningThreshold);
+                LearningThreshold.Append(newData.LearningThreshold);
             }
             if(par.SaveAccuracy){
-                Accuracy.Append(New.Accuracy);
+                Accuracy.Append(newData.Accuracy);
             }
             if(par.SaveChancetoForget){
-                ChanceForget.Append(New.ChanceForget);
+                ChanceForget.Append(newData.ChanceForget);
             }
             if(par.SaveChancetoInvent){
-                ChanceInvent.Append(New.ChanceInvent);
+                ChanceInvent.Append(newData.ChanceInvent);
             }
             if(par.SaveMSong){
-                MaleSong.Append(New.MaleSong);
+                MaleSong.Append(newData.MaleSong);
             }
             if(par.SaveFSong){
-                FemaleSong.Append(New.FemaleSong);
+                FemaleSong.Append(newData.FemaleSong);
             }
         }
     }
-
-
 }

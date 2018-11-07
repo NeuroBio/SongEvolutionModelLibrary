@@ -73,29 +73,17 @@ namespace SongEvolutionModelLibrary
                 Temp.Remove(i);
                 NextStep.Add(Temp);
             }
-            List<List<int>> lol = new List<List<int>> {};
+            //List<List<int>> lol = new List<List<int>> {};
             return(NextStep);
         }
         
         //Getting local and global birds
-        public static int[] GetGlobalBirds(SimParams par, Population pop,
-        int learner, List<int> potentialBirds, int numBirds=1){
-                int[] Birds;
-                List<int> PotentialBirds = potentialBirds.ToList();
-                PotentialBirds.Remove(learner);
-                if(numBirds == 1){
-                    Birds = par.randomSampleEqualReplace(PotentialBirds,numBirds);
-                }else{
-                    Birds = par.randomSampleEqualNoReplace(PotentialBirds,numBirds);
-                }
-                return(Birds);                    
-        }
         public static int[] GetLocalBirds(SimParams par, Population pop,
-        int learner, HashSet<int> unavailable, int numBirds=1, float[] probs = null){
+        int target, HashSet<int> unavailable, int numBirds=1, float[] probs = null){
             //pick Tutors locally
             int[] Birds = new int[numBirds];
             int[] UsableInd;
-            UsableInd = LocalSearch(par, pop, learner, unavailable, numBirds).ToArray();
+            UsableInd = LocalSearch(par, pop, target, unavailable, numBirds).ToArray();
 
             //return the right number of birds
             if(UsableInd.Length == numBirds){//only numTutors choice(s)
@@ -122,7 +110,7 @@ namespace SongEvolutionModelLibrary
             }
         }
         private static List<int> LocalSearch(SimParams par, Population pop,
-        int territory, HashSet<int> unavaliable, int Needed=1){
+        int territory, HashSet<int> unavaliable, int needed=1){
             //Get birds that are accaptable and local to a given territory
             List<int> CurrentIndex;
             for(int i=0;i<pop.Local.Length;i++){
@@ -133,11 +121,24 @@ namespace SongEvolutionModelLibrary
                         CurrentIndex.RemoveAt(j);
                     }
                 }
-                if(CurrentIndex.Count >= Needed){
+                if(CurrentIndex.Count >= needed){
                     return(CurrentIndex);
                 }
             }
             throw new ArgumentOutOfRangeException("All males are dead or songless; Game Over.");
         }
+        public static int[] GetGlobalBirds(SimParams par, Population pop,
+        int learner, List<int> potentialBirds, int numBirds=1){
+                int[] Birds;
+                List<int> PotentialBirds = potentialBirds.ToList();
+                PotentialBirds.Remove(learner);
+                if(numBirds == 1){
+                    Birds = par.randomSampleEqualReplace(PotentialBirds,numBirds);
+                }else{
+                    Birds = par.randomSampleEqualNoReplace(PotentialBirds,numBirds);
+                }
+                return(Birds);                    
+        }
+
     }
 }

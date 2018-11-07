@@ -67,7 +67,7 @@ namespace SongEvolutionModelLibrary
             }
             return(FSongs);
         }
-        public static List<int> GenerateNovelSong(SimParams par){
+        private static List<int> GenerateNovelSong(SimParams par){
             //Test whether each syllable is learned
             List<int> Song = new List<int>();
             for(int i=0; i<par.SongCore.Count;i++){
@@ -216,8 +216,8 @@ namespace SongEvolutionModelLibrary
             public int[] MaleOrder;
             public int[] FemaleOrder;
             public AssignResults(float[] match, int[] maleOrder, int[] femaleOrder){
-                Match = match;
-                MaleOrder= maleOrder;
+                Match=match;
+                MaleOrder=maleOrder;
                 FemaleOrder=femaleOrder;
             }
 

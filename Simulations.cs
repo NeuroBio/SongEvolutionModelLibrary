@@ -33,7 +33,7 @@ namespace SongEvolutionModelLibrary
             }
             return(SimData);
         }
-        public static InvasionData InvasionLrnThrsh(SimParams par, float InvaderStat, int numInvaders=1, int burnIn=500){
+        public static InvasionData InvasionLrnThrsh(SimParams par, float invaderStat, int numInvaders=1, int burnIn=500){
             Population Pop = new Population(par);
             //Get to Equilibrium         
             for(int i=0;i<burnIn;i++){
@@ -44,7 +44,7 @@ namespace SongEvolutionModelLibrary
             int[] InvaderIndex = par.randomSampleEqualNoReplace(Enumerable.Range(0,par.NumBirds).ToList(), numInvaders);
             for(int i=0;i<numInvaders;i++){
                 Pop.Age[InvaderIndex[i]] = 1;
-                Pop.LearningThreshold[InvaderIndex[i]] = InvaderStat;
+                Pop.LearningThreshold[InvaderIndex[i]] = invaderStat;
             }
 
             //Postinvasion run

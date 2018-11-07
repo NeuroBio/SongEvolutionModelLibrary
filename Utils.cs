@@ -6,10 +6,10 @@ using System.IO;
 
 namespace SongEvolutionModelLibrary{
     public class Utils{
-        public static string[] GetValidParams(string Path){
+        public static string[] GetValidParams(string path){
             //Get the files in a directory, test if .semp
             //Return all .semps
-            string[] PotentialParams = Directory.GetFiles(Path);
+            string[] PotentialParams = Directory.GetFiles(path);
             string[] File;
             List<string> FinalParams = new List<string>{};
             

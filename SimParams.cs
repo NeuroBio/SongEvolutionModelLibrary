@@ -24,7 +24,7 @@ namespace SongEvolutionModelLibrary{
         public bool OverLearn, FemaleEvolution, SaveMatch, SaveAccuracy,
                     SaveLearningThreshold, SaveChancetoInvent, SaveChancetoForget,
                     SaveNames, SaveAge, MatchUniform, ObliqueLearning,LogScale,
-                    ConsensusStrategy, Add, Forget, ChooseMate,
+                    ChooseMate, ConsensusStrategy=false, Add=false, Forget=false,
                     LocalBreeding, LocalTutor, AgeDeath, SaveMSong, SaveFSong;
         public HashSet<int> AllSyls;
         public List<float> SongCore;
@@ -40,15 +40,15 @@ namespace SongEvolutionModelLibrary{
         float inheritedAccuracyNoise = .15f, int maxAccuracy = 1, int minAccuracy = 0,
         int maxAge = 20, float initialLearningThreshold = 2f, bool saveFSong = false,
         float inheritedLearningThresholdNoise = .25f, float maxLearningThreshold = default(float),
-        float minLearningThreshold = 0f, float initialChancetoInvent = 3f,
+        float minLearningThreshold = 0f, float initialChancetoInvent = 10f,
         float inheritedChancetoInventNoise = 0f, float maxChancetoInvent=100f,
         float minChancetoInvent = 1f, float initialChancetoForget = .2f,
         float inheritedChancetoForgetNoise = 0f, float listeningThreshold = 7f,
         float encounterSuccess = .95f, float learningPenalty = .5f, float deathThreshold = 1,
         bool ageDeath = true, float percentDeath = .1f, bool saveMSong = false,
         float chickSurvival = .3f, bool localBreeding = true, bool localTutor = true,
-        string learningStrategy = "Add", int numTutorConsensusStrategy = 4,
-        bool overLearn = false, int numTutorOverLearn = 4, bool logScale =true,
+        string learningStrategy = "Add", int numTutorConsensusStrategy = 3,
+        bool overLearn = false, int numTutorOverLearn = 3, bool logScale =true,
         float repertoireSizePreference = 1f, float matchPreferenece = 0f,
         int numDialects = 1, string maleDialects = "None", bool femaleEvolution = false,
         bool? saveMatch = null, bool? saveAccuracy  = null, bool matchUniform = true,
@@ -197,10 +197,10 @@ namespace SongEvolutionModelLibrary{
             }else{Rand = new Random(Seed);}
         }
         //Song
-        private List<float> MakeCore(float PercentSyllableOverhang, int InitialSyllableRepertoireSize){
+        private List<float> MakeCore(float percentSyllableOverhang, int initialSyllableRepertoireSize){
             //create the probability vector to learn syllables
-            List<float> SongCore = Enumerable.Repeat(.9f, InitialSyllableRepertoireSize).ToList();
-            int Overhang = Convert.ToInt32(PercentSyllableOverhang * InitialSyllableRepertoireSize);
+            List<float> SongCore = Enumerable.Repeat(.9f, initialSyllableRepertoireSize).ToList();
+            int Overhang = Convert.ToInt32(percentSyllableOverhang * initialSyllableRepertoireSize);
             SongCore.AddRange(Enumerable.Repeat(.1f, Overhang).ToList());
             SongCore.AddRange(Enumerable.Repeat(.01f, Overhang).ToList());
             return(SongCore);
@@ -216,7 +216,7 @@ namespace SongEvolutionModelLibrary{
             }
             coefficients[coefficients.Length-1] = (deathThreshold/chickSurvival)+deathThreshold;
 
-            Func<double, double> f = x => polynomial(coefficients, x);
+            Func<double, double> f = x => Polynomial(coefficients, x);
             double root = MathNet.Numerics.FindRoots.OfFunction(f, 1.0, 2, 0.001, 1000);
             if (root < 0){
                 throw new Exception("Couldn't find a root!!!");
@@ -224,8 +224,8 @@ namespace SongEvolutionModelLibrary{
             root = 1.0/root;
             return (float)root;
         }
-        private static double polynomial(double[] coefficients, double in_x){
-            //solves polynomials for survival curves
+        private static double Polynomial(double[] coefficients, double in_x){
+            //creates polynomials for survival curves
             double value = coefficients[0];
             int length = coefficients.Length - 1;
             double x = in_x;
@@ -235,11 +235,11 @@ namespace SongEvolutionModelLibrary{
             }
             return value;
         }
-        bool TestRequirement(bool? Test, float Dependancy1 = 0f, bool Dependancy2 = false){
-            if(Test == null){
-                if(Dependancy1 == 0 && !Dependancy2){return(false);}
+        bool TestRequirement(bool? test, float dependancy1 = 0f, bool dependancy2 = false){
+            if(test == null){
+                if(dependancy1 == 0 && !dependancy2){return(false);}
                 return(true);
-            }else{return(Convert.ToBoolean(Test));}
+            }else{return(Convert.ToBoolean(test));}
         }
 
         //Sampling
@@ -328,7 +328,7 @@ namespace SongEvolutionModelLibrary{
             for (int i = 0; i < probs.Length; i++){
                 int j = tree.Length - probs.Length + i;
                 float p = probs[i];
-                backPropValue(ref tree, j, p);
+                BackPropValue(ref tree, j, p);
             }
             for (int i = 0; i < n; i++){
                 int j = 0, left = 1, right = 2;
@@ -347,12 +347,12 @@ namespace SongEvolutionModelLibrary{
                 }
                 choices[i] = j - (tree.Length - probs.Length);
                 if (!withReplacement){
-                backPropValue(ref tree, j, -tree[j]);
+                BackPropValue(ref tree, j, -tree[j]);
                 }
             }
             return choices;
         }
-        static void backPropValue(ref float[] tree, int j, float v){
+        static void BackPropValue(ref float[] tree, int j, float v){
             tree[j] += v;
             do{
                 if (j % 2 == 0) j = (j - 2) / 2;
