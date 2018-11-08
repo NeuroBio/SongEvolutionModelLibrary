@@ -188,7 +188,7 @@ namespace SongEvolutionModelLibrary
             float[] Match = new float[femaleSong.Count()];
             List<int> Available = Enumerable.Range(0,par.NumBirds).ToList();
             float[] probability = Enumerable.Repeat(0f,femaleSong.Count()).ToArray();
-            int[] ScrambleFemales = par.randomSampleUnequal(probability, femaleSong.Count(),false);
+            int[] ScrambleFemales = par.RandomSampleUnequal(probability, femaleSong.Count(),false);
             for(int i=0;i<femaleSong.Count()-1;i++){
                 List<float> TempMatches = new List<float> {};
                 for(int j=0;j<Available.Count();j++){
@@ -200,7 +200,7 @@ namespace SongEvolutionModelLibrary
                     ModifyMatches[WrongSong[j]] = 0.001f;
                 }
                 float[] TempProbability = ModifyMatches.ToArray();
-                int[] Chosen = par.randomSampleUnequal(TempProbability, 1,true);
+                int[] Chosen = par.RandomSampleUnequal(TempProbability, 1,true);
                 Order[i] = Available[Chosen[0]];
                 Match[i] = TempMatches[Chosen[0]];
                 Available.RemoveAt(Chosen[0]);

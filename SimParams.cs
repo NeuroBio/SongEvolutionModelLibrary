@@ -175,6 +175,9 @@ namespace SongEvolutionModelLibrary{
                     if(learningStrategy == "Forget" || learningStrategy == "AddForget"){
                         Forget =true;
                     }
+                    if(Add==false && Forget==false){
+                        throw new System.ArgumentException("learningStrategy must be either: Add, AddFroget, Forget, or Consensus");
+                    }
                 }
                 NumTutorConsensusStrategy = numTutorConsensusStrategy;
                 OverLearn = overLearn; NumTutorOverLearn = numTutorOverLearn;
@@ -195,6 +198,7 @@ namespace SongEvolutionModelLibrary{
             SongCore = MakeCore(PercentSyllableOverhang, InitialSyllableRepertoireSize);
             if(Seed == 0){Rand = new Random();
             }else{Rand = new Random(Seed);}
+            ErrorCheck();
         }
         //Song
         private List<float> MakeCore(float percentSyllableOverhang, int initialSyllableRepertoireSize){
@@ -241,7 +245,101 @@ namespace SongEvolutionModelLibrary{
                 return(true);
             }else{return(Convert.ToBoolean(test));}
         }
+        private void ErrorCheck(){
+            //Arguments outside of intended range
+            CheckMin(Rows, "Rows",3);
+            CheckMin(Cols, "Cols",3);
+            CheckMin(Steps, "Steps",1);
+            CheckMin(NumSim, "NumSims",1);                      
+            CheckMin(InitialSyllableRepertoireSize, "InitialSyllableRepertoireSize",1f);
+            CheckMin(MaxSyllableRepertoireSize, "MaxSyllableRepertoireSize",1f);
+            CheckMin(PercentSyllableOverhang, "PercentSyllableOverhang",0f);
+            CheckMin(EncounterSuccess,"EncounterSuccess");CheckMax(EncounterSuccess,"EncounterSuccess");
+            CheckMin(LearningPenalty,"LearningPenalty");
+            CheckMin(NumTutorOverLearn,"NumTutorOverLearn",1f);
+            CheckMin(NumTutorConsensusStrategy,"NumTutorConsensusStrategy",2f);
+            CheckMin(VerticalLearningCutOff,"VerticalLearningCutOff");CheckMax(VerticalLearningCutOff,"VerticalLearningCutOff");
+            CheckMin(PercentDeath,"PercentDeath",.01f);CheckMax(PercentDeath,"PercentDeath",.9f);
+            CheckMin(DeathThreshold,"DeathThreshold",.0001f);CheckMax(DeathThreshold,"DeathThreshold",.2f*NumBirds);
+            CheckMin(ChickSurvival,"ChickSurvival",.1f);CheckMax(ChickSurvival,"ChickSurvival");
 
+            CheckTrait(InitialAccuracy, InheritedAccuracyNoise, MinAccuracy, MaxAccuracy, "Accuracy");
+            CheckTrait(InitialLearningThreshold, InheritedLearningThresholdNoise, MinLearningThreshold, MaxLearningThreshold, "Learning Threshold", MaxAge);
+            CheckTrait(InitialChancetoInvent, InheritedChancetoInventNoise, MinChancetoInvent, MaxChancetoInvent, "Chance Invent");
+            CheckTrait(InitialChancetoForget, InheritedChancetoForgetNoise, MinChancetoForget, MaxChancetoForget, "Chance Forget");
+            
+            //Complex Errors
+            if(InitialSyllableRepertoireSize*(1+2*PercentSyllableOverhang) > MaxSyllableRepertoireSize){
+                throw new System.ArgumentException("InitialSYllableRepertoireSize*(1+2*PercentSyllableOverhang) cannot be greater than MaxSyllableRepertoireSize.");
+            }            
+            if((ListeningThreshold%1 != 0 && ListeningThreshold > 1) ||
+                    (ListeningThreshold > MaxSyllableRepertoireSize)  ||
+                    ListeningThreshold < 0){
+                throw new System.ArgumentException(string.Format("ListeningThreshold must either be an integer from 1 to {0}, or a fraction representing a precentage.  If .999 or greater is typed, it is converted to 100%.", MaxSyllableRepertoireSize));
+            }          
+            if(NumDialects < 1 ||
+                NumDialects >= NumBirds ||
+                NumBirds%NumDialects != 0||
+                NumDialects > MaxSyllableRepertoireSize/(InitialSyllableRepertoireSize*(1+2*PercentSyllableOverhang))){
+                    throw new System.ArgumentException("Dialects must meet the following criterion: 1) Must be an integer of 1 or greater. 2) Cannot be larger than the number of birds. 3) Must be a factor of the number of birds. 4) Must be less than or equal to MaxSylRepSize/(InitialSylRepSize*(1+2*PrcntSylOverhang)).");
+            }
+            if(MaleDialects != "None" && MaleDialects != "Similar" && MaleDialects != "Same"){
+                throw new System.ArgumentException("MaleDialects must be None, SImilar, or Same.");
+            }
+            if(MatchPreferenece == 0  && SaveMatch == false && SaveFSong == true){
+                throw new System.ArgumentException("Cannot save female song unless it is generated. It is not generated unless 1) MatchPrefer > 0, 2) FemaleEvolve == TRUE,or 3) SaveMatch == TRUE.");
+            }
+
+            //Warnings
+            if(FemaleEvolution==true && MatchPreferenece == 0){
+                Console.WriteLine("Warning: FemaleEvolve implimented only when females have a match preference > 0.");
+            }
+            if(MatchPreferenece == 0 && MaleDialects != "None"){
+                Console.WriteLine("Warning: MaleDialects only implemented when match preference > 0.");
+            }
+            if(DeathThreshold < 1){
+                Console.WriteLine("Warning: Small DeathThresholds decrease the chances that any birds will survive the selection process long enough to reach the MaxAge.");
+            }
+            if(Steps >= Math.Max(Rows, Cols)-1 && (LocalBreeding || LocalTutor)){
+                Console.WriteLine("Warning: Steps set to a value that makes Local equivalent to Global.  LocalBreeding and LocalTutor set to false.");
+                LocalBreeding = false;
+                LocalTutor = false;
+            }
+                        if(EncounterSuccess==0){
+                Console.WriteLine("Warning: EncounterSuccess set to zero, so not oblique learning can occur.");
+            }
+
+        }
+        public void CheckMin(float trait, string traitName, float min=0f){
+            if(trait < min){
+                throw new System.ArgumentException(string.Format("{0} cannot be less than {1}.", traitName,min));
+            }
+        }
+        public void CheckMax(float trait, string traitName, float max=1f){
+            if(trait > max){
+                throw new System.ArgumentException(string.Format("{0} cannot be less than {1}.", traitName,max));
+            }
+        }
+        private void CheckTrait(float initial, float noise, float min, float max, string name, float absMax=1f){
+            if(min >= max){
+                throw new System.ArgumentException(string.Format("The min for {0} must be less than the max.", name));
+            }
+            if(noise > (max-min)/2){
+                throw new System.ArgumentException(string.Format("The noise for {0} is too large.", name));
+            }
+            if(noise < 0){
+                throw new System.ArgumentException(string.Format("The noise for {0} cannot be less than 0", name));
+            }
+            if(min < 0){
+                throw new System.ArgumentException(string.Format("The min {0} cannot be less than 0.", name));
+            }
+            if(max > absMax){
+                throw new System.ArgumentException(string.Format("The max {0} cannot be greater than {1}.", name, absMax));
+            }
+            if(initial > max || initial < min){
+                throw new System.ArgumentException(string.Format("The initial value for {0} must be with within the range of its min and max.", name));
+            }
+        }
         //Sampling
         public float NextFloat(){
             //for random number generation throughout the simmulation
@@ -251,7 +349,7 @@ namespace SongEvolutionModelLibrary{
             //for random number generation throughout the simmulation
             return Rand.Next(N);
         }
-        public int[] randomSampleEqualNoReplace(List<int> list, int k){
+        public int[] RandomSampleEqualNoReplace(List<int> list, int k){
             //warning, index will get changed by this code!
             if(k > list.Count){
                 throw new ArgumentOutOfRangeException("Cannot sample indexs that do not exist.");
@@ -275,7 +373,7 @@ namespace SongEvolutionModelLibrary{
             }
             return(Chosen);
         }
-        public int[] randomSampleEqualReplace(List<int> list, int k){
+        public int[] RandomSampleEqualReplace(List<int> list, int k){
             int[] Chosen = new int[k];
             for(int i=0;i<k;i++){
                 Chosen[i] = this.NextN(list.Count);
@@ -322,7 +420,7 @@ namespace SongEvolutionModelLibrary{
             }
             return(Chosen);
         }*/
-        public int[] randomSampleUnequal(float[] probs, int n, bool withReplacement = false){
+        public int[] RandomSampleUnequal(float[] probs, int n, bool withReplacement = false){
             float[] tree = new float[2 * probs.Length - 1];
             int[] choices = new int[n];
             for (int i = 0; i < probs.Length; i++){

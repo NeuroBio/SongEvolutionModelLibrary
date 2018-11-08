@@ -26,8 +26,7 @@ namespace SongEvolutionModelLibrary
             //Innovation
             if(Rolls.Count>0){
                 int Innovation = 0;
-                float InventThresh = (pop.Accuracy[learner]+pop.ChanceInvent[learner]-1)
-                                        /pop.ChanceInvent[learner];
+                float InventThresh = 1-(1-pop.Accuracy[learner]*pop.ChanceInvent[learner]);
                 for(int i=0;i<Rolls.Count;i++){
                     if(Rolls[i] >= InventThresh){
                     Innovation += 1;
@@ -40,7 +39,7 @@ namespace SongEvolutionModelLibrary
                     if(Innovation >= AvailableSyllables.Count){//Not enough syls for sampling
                         NewSyls = AvailableSyllables.ToArray();
                     }else{// Enough syls for sampling
-                        NewSyls=par.randomSampleEqualNoReplace(AvailableSyllables.ToList(),Innovation);
+                        NewSyls=par.RandomSampleEqualNoReplace(AvailableSyllables.ToList(),Innovation);
                     }
                         learnerSong.AddRange(NewSyls);
                 }//Otherwise no innovation occured
@@ -212,7 +211,7 @@ namespace SongEvolutionModelLibrary
                 for(int i=0;i<learners.Count;i++){
                     PotentialTutors = PotentialTutorsTemp.ToList();
                     PotentialTutors.Remove(learners[i]);
-                    Tutors[i] = par.randomSampleEqualReplace( PotentialTutors,1)[0];
+                    Tutors[i] = par.RandomSampleEqualReplace( PotentialTutors,1)[0];
                 }
             }
             return(Tutors);
@@ -236,7 +235,7 @@ namespace SongEvolutionModelLibrary
                 for(int i=0;i<learners.Count;i++){
                 PotentialTutors = PotentialTutorsTemp.ToList();
                 PotentialTutors.Remove(learners[i]);
-                Tutors[i] = par.randomSampleEqualNoReplace(PotentialTutors, numTutors).ToList();
+                Tutors[i] = par.RandomSampleEqualNoReplace(PotentialTutors, numTutors).ToList();
                 }
             }
             return(Tutors);
@@ -259,7 +258,7 @@ namespace SongEvolutionModelLibrary
                 for(int i=0;i<TutorSyls.Length;i++){
                     if(TutorSyls[i].Count>Thresh){
                         Remove = TutorSyls[i].Count-Thresh;
-                        par.randomSampleEqualNoReplace(TutorSyls[i], Remove);
+                        par.RandomSampleEqualNoReplace(TutorSyls[i], Remove);
                     }
                 }
             }else{//percentage of sylls learned
@@ -271,7 +270,7 @@ namespace SongEvolutionModelLibrary
                                 (float)Math.Ceiling(Learnable):(float)Math.Floor(Learnable);
                     Remove = TutorSyls[i].Count-Learnable;
                     if(Remove > 0){
-                        par.randomSampleEqualNoReplace(TutorSyls[i], (int)Remove);
+                        par.RandomSampleEqualNoReplace(TutorSyls[i], (int)Remove);
                     }
                 }
             }

@@ -13,7 +13,7 @@ namespace SongEvolutionModelLibrary
                 AgeGroup = GetAgeGroup(par, AgeRates);
             }else{
                 List<int> AgeRange = Enumerable.Range(0,par.MaxAge+1).ToList();
-                AgeGroup = par.randomSampleEqualReplace(AgeRange, par.NumBirds); 
+                AgeGroup = par.RandomSampleEqualReplace(AgeRange, par.NumBirds); 
             }
             return(AgeGroup);
         }
@@ -82,7 +82,7 @@ namespace SongEvolutionModelLibrary
 
             //Rearrange the age groups randomly
             List<int> Rearrange = Enumerable.Range(0,par.NumBirds).ToList();
-            int[] NewIndex = par.randomSampleEqualNoReplace(Rearrange, par.NumBirds);
+            int[] NewIndex = par.RandomSampleEqualNoReplace(Rearrange, par.NumBirds);
             //AgeGroup = AgeGroup.OrderBy(x => par.Rand.Next()).ToList();  for generating array with rand numbers
             int[] ScrambledAgeGroup = AgeGroup.ToArray();
             Array.Sort(NewIndex, ScrambledAgeGroup);

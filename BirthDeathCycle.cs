@@ -94,7 +94,7 @@ namespace SongEvolutionModelLibrary
                     for(int j=0;j<AgePool.Length;j++){
                         PickChanceSubSet[j] = PickChance[AgePool[j]];
                     }
-                    ChosenInd = par.randomSampleUnequal(PickChanceSubSet, MustDie, false);
+                    ChosenInd = par.RandomSampleUnequal(PickChanceSubSet, MustDie, false);
                     for(int j=0;j<ChosenInd.Length;j++){
                         Chosen[j] = AgePool[ChosenInd[j]];
                     }
@@ -114,7 +114,7 @@ namespace SongEvolutionModelLibrary
         private static int[] RandomDeath(SimParams par, Population pop){
             float[] PickChance = LearningPenalty(par, pop.LearningThreshold);
             int numLostBirds = (int)Math.Floor(par.NumBirds*par.PercentDeath);
-            int[] LostBirds = par.randomSampleUnequal(PickChance, numLostBirds,false);
+            int[] LostBirds = par.RandomSampleUnequal(PickChance, numLostBirds,false);
             return(LostBirds);
         }
         private static float[] LearningPenalty(SimParams par, float[] learnThreshold){
@@ -164,7 +164,7 @@ namespace SongEvolutionModelLibrary
                 for(int i=0;i<PotenProbs.Length;i++){
                     PotenProbs[i] = Probability[PotentialFathers[i]];
                 }
-                FatherIndex = par.randomSampleUnequal(PotenProbs,vacant.Length,false);
+                FatherIndex = par.RandomSampleUnequal(PotenProbs,vacant.Length,false);
                 for(int i=0;i<Fathers.Length;i++){
                     Fathers[i] = PotentialFathers[FatherIndex[i]];
                 }               
@@ -217,7 +217,7 @@ namespace SongEvolutionModelLibrary
                     /*for(int j=0;j<PotenProbs.Length;j++){
                         PotenProbs[j] = Probability[PotentialFathers[j]];
                     }*/
-                    Fathers[i] = PotentialFathers[par.randomSampleUnequal(PotenProbsTemp,1,true)[0]];
+                    Fathers[i] = PotentialFathers[par.RandomSampleUnequal(PotenProbsTemp,1,true)[0]];
                 }
             }
             return(Fathers);
@@ -272,6 +272,7 @@ namespace SongEvolutionModelLibrary
             }
             return(FullBonus);
         }
+        
         //Reset for next run        
         private static Population UpdateDeathProbabilities(SimParams par, Population pop, 
         int[] fatherInd){

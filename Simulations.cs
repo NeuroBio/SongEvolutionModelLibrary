@@ -41,7 +41,7 @@ namespace SongEvolutionModelLibrary
             }
             
             //Invade
-            int[] InvaderIndex = par.randomSampleEqualNoReplace(Enumerable.Range(0,par.NumBirds).ToList(), numInvaders);
+            int[] InvaderIndex = par.RandomSampleEqualNoReplace(Enumerable.Range(0,par.NumBirds).ToList(), numInvaders);
             for(int i=0;i<numInvaders;i++){
                 Pop.Age[InvaderIndex[i]] = 1;
                 Pop.LearningThreshold[InvaderIndex[i]] = invaderStat;

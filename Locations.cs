@@ -95,17 +95,17 @@ namespace SongEvolutionModelLibrary
                     for(int j=0;j<UsableInd.Length;j++){
                         Prob[j] = probs[UsableInd[j]];
                     }
-                    Index = par.randomSampleUnequal(Prob,numBirds,false);
+                    Index = par.RandomSampleUnequal(Prob,numBirds,false);
                     for(int j=0; j<numBirds;j++){
                         Birds[j] = UsableInd[Index[j]];
                     }
                     return(Birds);
                 }
                 if(numBirds == 1){//can use the faster with replace
-                    Birds = par.randomSampleEqualReplace(UsableInd.ToList(),1);
+                    Birds = par.RandomSampleEqualReplace(UsableInd.ToList(),1);
                     return(Birds);
                 }//need the slower without replace
-                Birds = par.randomSampleEqualNoReplace(UsableInd.ToList(),1);
+                Birds = par.RandomSampleEqualNoReplace(UsableInd.ToList(),1);
                 return(Birds);                
             }
         }
@@ -133,9 +133,9 @@ namespace SongEvolutionModelLibrary
                 List<int> PotentialBirds = potentialBirds.ToList();
                 PotentialBirds.Remove(learner);
                 if(numBirds == 1){
-                    Birds = par.randomSampleEqualReplace(PotentialBirds,numBirds);
+                    Birds = par.RandomSampleEqualReplace(PotentialBirds,numBirds);
                 }else{
-                    Birds = par.randomSampleEqualNoReplace(PotentialBirds,numBirds);
+                    Birds = par.RandomSampleEqualNoReplace(PotentialBirds,numBirds);
                 }
                 return(Birds);                    
         }
