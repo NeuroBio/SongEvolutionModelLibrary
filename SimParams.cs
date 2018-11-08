@@ -57,7 +57,7 @@ namespace SongEvolutionModelLibrary{
         bool saveAge  = false, int numSim = 1000, int seed = default(int),
         float minChancetoForget = 0f, float maxChancetoForget = 1f, 
         bool obliqueLearning = true, float verticalLearningCutOff=.25f, bool reload = false,
-        string path = default(string)){    
+        string path = default(string), bool errorCheck = true){    
             if(reload){
                 //Load in params, string split and assign
                 string[] Params = File.ReadAllText(path).Split('\n');
@@ -198,7 +198,9 @@ namespace SongEvolutionModelLibrary{
             SongCore = MakeCore(PercentSyllableOverhang, InitialSyllableRepertoireSize);
             if(Seed == 0){Rand = new Random();
             }else{Rand = new Random(Seed);}
-            ErrorCheck();
+            if(errorCheck){
+                ErrorCheck();
+            }
         }
         //Song
         private List<float> MakeCore(float percentSyllableOverhang, int initialSyllableRepertoireSize){
