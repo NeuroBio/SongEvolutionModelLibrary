@@ -139,8 +139,8 @@ namespace SongEvolutionModelLibrary
             offspring in one sim step for both local and global scopes*/
             
             //Remove songless birds from notVacant, and mark all not in that list as unavailable
-            HashSet<int> PotentialFathersTemp = notVacant.Where(x => pop.SyllableRepertoire[x] > 0).ToHashSet();
-            HashSet<int> Unavailable = Enumerable.Range(0, par.NumBirds).ToHashSet();
+            HashSet<int> PotentialFathersTemp = new HashSet<int>(notVacant.Where(x => pop.SyllableRepertoire[x] > 0));
+            HashSet<int> Unavailable = new HashSet<int>(Enumerable.Range(0, par.NumBirds));
             Unavailable.ExceptWith(PotentialFathersTemp);
             //Get the probabilities
             List<int> PotentialFathers = PotentialFathersTemp.ToList();
@@ -180,8 +180,8 @@ namespace SongEvolutionModelLibrary
             offspring in one sim step for both local and global scopes*/
             
             //Remove songless birds from notVacant, and mark all not in that list as unavailable
-            HashSet<int> PotentialFathersTemp = notVacant.Where(x => pop.SyllableRepertoire[x] > 0).ToHashSet();
-            HashSet<int> Unavailable = Enumerable.Range(0, par.NumBirds).ToHashSet();
+            HashSet<int> PotentialFathersTemp = new HashSet<int>(notVacant.Where(x => pop.SyllableRepertoire[x] > 0));
+            HashSet<int> Unavailable = new HashSet<int>(Enumerable.Range(0, par.NumBirds));
             Unavailable.ExceptWith(PotentialFathersTemp);
             
             //Get the probabilities
@@ -257,10 +257,10 @@ namespace SongEvolutionModelLibrary
             
             //Match
             float[] MatBonus = new float[usableMales.Count];
-            if(par.MatchPreferenece != 0){
+            if(par.MatchPreference != 0){
                 float Bonus;
                 for(int i=0;i<usableMales.Count;i++){
-                    Bonus = par.MatchPreferenece*pop.Match[usableMales[i]];
+                    Bonus = par.MatchPreference*pop.Match[usableMales[i]];
                     if(Bonus < .001){Bonus = .001f;}
                     MatBonus[i] = Bonus;
                 }

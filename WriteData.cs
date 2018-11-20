@@ -191,7 +191,7 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"VertLrnCut={par.VerticalLearningCutOff}");
             Par.AppendLine($"RepPref={par.RepertoireSizePreference}");
             Par.AppendLine($"LogScl={par.LogScale}");
-            Par.AppendLine($"MatPref={par.MatchPreferenece}");
+            Par.AppendLine($"MatPref={par.MatchPreference}");
             Par.AppendLine($"NoisePref={par.NoisePreference}");
             Par.AppendLine($"UniMat={par.MatchUniform}");
             Par.AppendLine($"MScl=1");

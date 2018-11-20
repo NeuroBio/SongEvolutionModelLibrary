@@ -178,7 +178,7 @@ namespace SongEvolutionModelLibrary
         private static Population UpdateSongTraits(SimParams par, Population pop, List<int> learners){
             for(int i=0;i<learners.Count;i++){
                 pop.SyllableRepertoire[learners[i]] = pop.MaleSong[learners[i]].Count;
-                if(par.MatchPreferenece != 0 || par.SaveMatch){
+                if(par.MatchPreference != 0 || par.SaveMatch){
                     pop.Match[learners[i]] = Songs.GetMatch(par, pop.MaleSong[learners[i]], pop.FemaleSong[learners[i]]);
                 }
             }
@@ -194,14 +194,14 @@ namespace SongEvolutionModelLibrary
             
             /*remove chicks and songless birds + any Misc, mark all excluded
             birds as unavailable*/
-            HashSet<int> PotentialTutorsTemp = notVacant.Where(x => pop.Age[x] > 0).ToHashSet();
+            HashSet<int> PotentialTutorsTemp = new HashSet<int>(notVacant.Where(x => pop.Age[x] > 0));
             PotentialTutorsTemp.ExceptWith(PotentialTutorsTemp.Where(x => pop.SyllableRepertoire[x] == 0).ToArray());
 
             //pick Tutors
             int[] Tutors = new int[learners.Count];
             if(par.LocalTutor){
                 //Set up unavailable for local testing
-                HashSet<int> Unavailable = Enumerable.Range(0, par.NumBirds).ToHashSet();
+                HashSet<int> Unavailable = new HashSet<int>(Enumerable.Range(0, par.NumBirds));
                 Unavailable.ExceptWith(PotentialTutorsTemp);
                 for(int i=0;i<learners.Count;i++){
                     Tutors[i] = Locations.GetLocalBirds(par, pop, learners[i], Unavailable)[0];
@@ -220,11 +220,11 @@ namespace SongEvolutionModelLibrary
         List<int> learners, List<int> notVacant, int numTutors){
             /*remove chicks and songless birds + any Misc, mark all excluded
             birds as unavailable*/
-            HashSet<int> PotentialTutorsTemp = notVacant.Where(x => pop.Age[x] > 0).ToHashSet();
+            HashSet<int> PotentialTutorsTemp = new HashSet<int>(notVacant.Where(x => pop.Age[x] > 0));
             PotentialTutorsTemp.ExceptWith(PotentialTutorsTemp.Where(x => pop.SyllableRepertoire[x] == 0).ToArray());
             List<int>[] Tutors = new List<int>[learners.Count];
             if(par.LocalTutor){
-                HashSet<int> Unavailable = Enumerable.Range(0, par.NumBirds).ToHashSet();
+                HashSet<int> Unavailable = new HashSet<int>(Enumerable.Range(0, par.NumBirds));
                 Unavailable.ExceptWith(PotentialTutorsTemp);
                 for(int i=0;i<learners.Count;i++){
                     Tutors[i] = Locations.GetLocalBirds(par, pop, learners[i], Unavailable, numTutors).ToList();

@@ -19,7 +19,7 @@ namespace SongEvolutionModelLibrary{
                     MaxChancetoForget, MinChancetoForget,
                     ListeningThreshold, EncounterSuccess, LearningPenalty, PercentDeath,
                     DeathThreshold, ChickSurvival, InitialSurvival, RepertoireSizePreference,
-                    MatchPreferenece, NoisePreference, VerticalLearningCutOff;
+                    MatchPreference, NoisePreference, VerticalLearningCutOff;
         public string MaleDialects;
         public bool OverLearn, FemaleEvolution, SaveMatch, SaveAccuracy,
                     SaveLearningThreshold, SaveChancetoInvent, SaveChancetoForget,
@@ -40,7 +40,7 @@ namespace SongEvolutionModelLibrary{
         float inheritedAccuracyNoise = .15f, int maxAccuracy = 1, int minAccuracy = 0,
         int maxAge = 20, float initialLearningThreshold = 2f, bool saveFSong = false,
         float inheritedLearningThresholdNoise = .25f, float maxLearningThreshold = default(float),
-        float minLearningThreshold = 0f, float initialChancetoInvent = 10f,
+        float minLearningThreshold = 0f, float initialChancetoInvent = .1f,
         float inheritedChancetoInventNoise = 0f, float maxChancetoInvent=1f,
         float minChancetoInvent = 0f, float initialChancetoForget = .2f,
         float inheritedChancetoForgetNoise = 0f, float listeningThreshold = 7f,
@@ -49,7 +49,7 @@ namespace SongEvolutionModelLibrary{
         float chickSurvival = .3f, bool localBreeding = true, bool localTutor = true,
         string learningStrategy = "Add", int numTutorConsensusStrategy = 3,
         bool overLearn = false, int numTutorOverLearn = 3, bool logScale =true,
-        float repertoireSizePreference = 1f, float matchPreferenece = 0f,
+        float repertoireSizePreference = 1f, float matchPreference = 0f,
         int numDialects = 1, string maleDialects = "None", bool femaleEvolution = false,
         bool? saveMatch = null, bool? saveAccuracy  = null, bool matchUniform = true,
         bool? saveLearningThreshold  = null, bool? saveChancetoInvent  = null,
@@ -62,7 +62,7 @@ namespace SongEvolutionModelLibrary{
                 //Load in params, string split and assign
                 string[] Params = File.ReadAllText(path).Split('\n');
                 for(int i=0;i<Params.Length-1;i++){
-                    Params[i] = Params[i].Split("=")[1];
+                    Params[i] = Params[i].Split('=')[1];
                 }
                     Rows=System.Convert.ToInt32(Params[0]);
                     Cols=System.Convert.ToInt32(Params[1]);
@@ -110,7 +110,7 @@ namespace SongEvolutionModelLibrary{
                     VerticalLearningCutOff=float.Parse(Params[41], CultureInfo.InvariantCulture);
                     RepertoireSizePreference=float.Parse(Params[42], CultureInfo.InvariantCulture);
                     LogScale=System.Convert.ToBoolean(Params[43]);
-                    MatchPreferenece=float.Parse(Params[44], CultureInfo.InvariantCulture);
+                    MatchPreference=float.Parse(Params[44], CultureInfo.InvariantCulture);
                     NoisePreference=float.Parse(Params[45], CultureInfo.InvariantCulture);
                     MatchUniform=System.Convert.ToBoolean(Params[46]);
                     //MatchScale=System.Convert.ToInt32(Params[47]);
@@ -182,11 +182,11 @@ namespace SongEvolutionModelLibrary{
                 NumTutorConsensusStrategy = numTutorConsensusStrategy;
                 OverLearn = overLearn; NumTutorOverLearn = numTutorOverLearn;
                 RepertoireSizePreference = repertoireSizePreference;
-                MatchPreferenece = matchPreferenece; ChooseMate = chooseMate;
-                NoisePreference = 1-(RepertoireSizePreference + MatchPreferenece);
+                MatchPreference = matchPreference; ChooseMate = chooseMate;
+                NoisePreference = 1-(RepertoireSizePreference + MatchPreference);
                 NumDialects = numDialects; MaleDialects = maleDialects;
                 FemaleEvolution = femaleEvolution; LogScale = logScale;
-                SaveMatch = TestRequirement(saveMatch, matchPreferenece, femaleEvolution);
+                SaveMatch = TestRequirement(saveMatch, MatchPreference, femaleEvolution);
                 SaveAccuracy=TestRequirement(saveAccuracy, InheritedAccuracyNoise);
                 SaveLearningThreshold = TestRequirement(saveLearningThreshold, InheritedLearningThresholdNoise);
                 SaveChancetoInvent = TestRequirement(saveChancetoInvent, InheritedChancetoInventNoise);
@@ -288,15 +288,15 @@ namespace SongEvolutionModelLibrary{
             if(MaleDialects != "None" && MaleDialects != "Similar" && MaleDialects != "Same"){
                 throw new System.ArgumentException("MaleDialects must be None, SImilar, or Same.");
             }
-            if(MatchPreferenece == 0  && SaveMatch == false && SaveFSong == true){
+            if(MatchPreference == 0  && SaveMatch == false && SaveFSong == true){
                 throw new System.ArgumentException("Cannot save female song unless it is generated. It is not generated unless 1) MatchPrefer > 0, 2) FemaleEvolve == TRUE,or 3) SaveMatch == TRUE.");
             }
 
             //Warnings
-            if(FemaleEvolution==true && MatchPreferenece == 0){
+            if(FemaleEvolution==true && MatchPreference == 0){
                 Console.WriteLine("Warning: FemaleEvolve implimented only when females have a match preference > 0.");
             }
-            if(MatchPreferenece == 0 && MaleDialects != "None"){
+            if(MatchPreference == 0 && MaleDialects != "None"){
                 Console.WriteLine("Warning: MaleDialects only implemented when match preference > 0.");
             }
             if(DeathThreshold < 1){

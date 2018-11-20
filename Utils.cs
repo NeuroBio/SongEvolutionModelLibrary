@@ -14,7 +14,7 @@ namespace SongEvolutionModelLibrary{
             List<string> FinalParams = new List<string>{};
             
             for(int i=0;i<PotentialParams.Length;i++){
-                File = PotentialParams[i].Split(".");
+                File = PotentialParams[i].Split('.');
                 if(File[File.Length-1] == "semp"){
                     FinalParams.Add(PotentialParams[i]);
                 }
@@ -23,8 +23,8 @@ namespace SongEvolutionModelLibrary{
         }
         public static string GetTag(string fileName){
             fileName = fileName.Replace("\\","/");
-            string[] Tag = fileName.Split("/");
-            Tag = Tag[Tag.Length-1].Split(".");
+            string[] Tag = fileName.Split('/');
+            Tag = Tag[Tag.Length-1].Split('.');
             return(Tag[0]);
         }
     }
