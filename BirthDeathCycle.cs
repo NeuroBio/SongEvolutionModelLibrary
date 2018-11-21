@@ -17,7 +17,6 @@ namespace SongEvolutionModelLibrary
             for(int i=0;i<Vacant.Length;i++){
                 NotVacant.Remove(Vacant[i]);
             }
-            
             //Allow for oblique learning and age up
             if(par.ObliqueLearning){
                 Learning.ObliqueLearning(par, pop, Vacant, NotVacant);
@@ -283,7 +282,7 @@ namespace SongEvolutionModelLibrary
                 }
             }
             pop.SurvivalChance[1] = pop.SurvivalStore;
-            pop.SurvivalStore = (float)Math.Pow(1/(par.ChickSurvival*fatherInd.Length),1/par.MaxAge); 
+            pop.SurvivalStore = (float)Math.Pow(1/(par.ChickSurvival*fatherInd.Length),1.0/par.MaxAge);
             return(pop);
         }
     }
