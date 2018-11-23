@@ -102,10 +102,10 @@ namespace SongEvolutionModelLibrary
                     return(Birds);
                 }
                 if(numBirds == 1){//can use the faster with replace
-                    Birds = par.RandomSampleEqualReplace(UsableInd.ToList(),1);
+                    Birds[0] = UsableInd[par.RandomSampleEqualReplace(UsableInd.ToList(),1)[0]];
                     return(Birds);
                 }//need the slower without replace
-                Birds = par.RandomSampleEqualNoReplace(UsableInd.ToList(),1);
+                Birds = par.RandomSampleEqualNoReplace(UsableInd.ToList(),numBirds);
                 return(Birds);                
             }
         }

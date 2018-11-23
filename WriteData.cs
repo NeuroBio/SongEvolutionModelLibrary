@@ -181,7 +181,8 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"InitProp={par.InitialSurvival}");
             Par.AppendLine($"ScopeB={par.LocalBreeding}");
             Par.AppendLine($"ScopeT={par.LocalTutor}");
-            Par.AppendLine($"Consen={par.ConsensusStrategy}");
+            Par.AppendLine($"Consen={par.Consensus}");
+            Par.AppendLine($"ConsenS={par.ConsensusStrategy}");
             Par.AppendLine($"Add={par.Add}");
             Par.AppendLine($"Forget={par.Forget}");
             Par.AppendLine($"ConNoTut={par.NumTutorConsensusStrategy}");

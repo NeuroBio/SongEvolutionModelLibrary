@@ -26,7 +26,7 @@ namespace SongEvolutionModelLibrary
             //Innovation
             if(Rolls.Count>0){
                 int Innovation = 0;
-                float InventThresh = 1-(1-pop.Accuracy[learner]*pop.ChanceInvent[learner]);
+                float InventThresh = 1-((1-pop.Accuracy[learner])*pop.ChanceInvent[learner]);
                 for(int i=0;i<Rolls.Count;i++){
                     if(Rolls[i] >= InventThresh){
                     Innovation += 1;
@@ -64,7 +64,7 @@ namespace SongEvolutionModelLibrary
             List<int> Learners = GetLearners(par, pop, notVacant);
             List<int>[] AddSyls;
             List<int>[] LoseSyls;
-            if(par.ConsensusStrategy){
+            if(par.Consensus){
                 List<int>[] Tutors = ChooseMultipleTutors(par, pop, Learners,
                                                     notVacant, par.NumTutorConsensusStrategy);
                 var Results = ConsensusLearning(par, pop, Tutors, Learners);
@@ -95,6 +95,7 @@ namespace SongEvolutionModelLibrary
             List<int>[] AddSyls = new List<int>[learners.Count];
             List<int>[] AllSongs;
             List<int> CollapsedSongs;
+            float Conform;
             for(int i=0;i<learners.Count;i++){
                 ConsensusSongs[i] = new List<int>{};
                 AddSyls[i] = new List<int>{};
@@ -102,13 +103,26 @@ namespace SongEvolutionModelLibrary
                 CollapsedSongs = AllSongs.SelectMany(x => x).ToList();
                 ConsensusSongs[i] = CollapsedSongs.Distinct().ToList();
                 for(int j=0;j<ConsensusSongs[i].Count();j++){
-                    if(par.NextFloat() < CollapsedSongs.Count(x => x==ConsensusSongs[i][j])/par.NumTutorConsensusStrategy){
-                      AddSyls[i].Add(ConsensusSongs[i][j]);  
+                    Conform = ConsensusCalc(par, ConsensusSongs[i][j], CollapsedSongs);
+                    if(par.NextFloat() < Conform){
+                        AddSyls[i].Add(ConsensusSongs[i][j]);
                     }
                 }
             }
             ConsensusResults Returnable = new ConsensusResults(AddSyls, ConsensusSongs);
             return(Returnable);           
+        }
+        private static float ConsensusCalc(SimParams par, int syl, List<int> collapsedSongs){
+            float Conform;
+            if(par.ConsensusStrategy == "Conform"){
+                Conform = collapsedSongs.Count(x => x==syl)/(float)par.NumTutorConsensusStrategy;
+                Conform = (float)(Conform - Math.Sin(2*Math.PI*Conform)/(2*Math.PI));
+            }else if(par.ConsensusStrategy == "AllNone"){
+                Conform = collapsedSongs.Count(x => x==syl)/par.NumTutorConsensusStrategy;
+            }else{
+                Conform = collapsedSongs.Count(x => x==syl)/(float)par.NumTutorConsensusStrategy;
+            }
+            return(Conform);
         }
         private struct ConsensusResults{
             public List<int>[] AddSyls;
@@ -211,7 +225,7 @@ namespace SongEvolutionModelLibrary
                 for(int i=0;i<learners.Count;i++){
                     PotentialTutors = PotentialTutorsTemp.ToList();
                     PotentialTutors.Remove(learners[i]);
-                    Tutors[i] = par.RandomSampleEqualReplace( PotentialTutors,1)[0];
+                    Tutors[i] = PotentialTutors[par.RandomSampleEqualReplace(PotentialTutors,1)[0]];
                 }
             }
             return(Tutors);
@@ -223,6 +237,7 @@ namespace SongEvolutionModelLibrary
             HashSet<int> PotentialTutorsTemp = new HashSet<int>(notVacant.Where(x => pop.Age[x] > 0));
             PotentialTutorsTemp.ExceptWith(PotentialTutorsTemp.Where(x => pop.SyllableRepertoire[x] == 0).ToArray());
             List<int>[] Tutors = new List<int>[learners.Count];
+            
             if(par.LocalTutor){
                 HashSet<int> Unavailable = new HashSet<int>(Enumerable.Range(0, par.NumBirds));
                 Unavailable.ExceptWith(PotentialTutorsTemp);
@@ -231,11 +246,10 @@ namespace SongEvolutionModelLibrary
                 }
             }else{
                 List<int> PotentialTutors;
-                int[] TutInd = new int[learners.Count];
                 for(int i=0;i<learners.Count;i++){
-                PotentialTutors = PotentialTutorsTemp.ToList();
-                PotentialTutors.Remove(learners[i]);
-                Tutors[i] = par.RandomSampleEqualNoReplace(PotentialTutors, numTutors).ToList();
+                    PotentialTutors = PotentialTutorsTemp.ToList();
+                    PotentialTutors.Remove(learners[i]);
+                    Tutors[i] = par.RandomSampleEqualNoReplace(PotentialTutors, numTutors).ToList();
                 }
             }
             return(Tutors);
