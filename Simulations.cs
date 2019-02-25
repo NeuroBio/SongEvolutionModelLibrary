@@ -34,7 +34,7 @@ namespace SongEvolutionModelLibrary
             return(SimData);
         }
 
-        public static InvasionData InvasionLrnThrsh(SimParams par, string type, float invaderStat, int numInvaders=1, int burnIn=500){
+        public static InvasionData Invasion(SimParams par, string type, float invaderStat, int numInvaders=1, int burnIn=500){
             CheckStatValue(par, type, invaderStat);
             Population Pop = new Population(par);
 
