@@ -54,7 +54,8 @@ namespace SongEvolutionModelLibrary
             if(pop.LearningThreshold[chickInd] < par.VerticalLearningCutOff){
                 return(NewSong);    
             }
-            List<int> ChickSong = CoreLearningProcess(par, pop, chickInd, NewSong, pop.MaleSong[fatherInd]);
+            List<int> FatherSong = ListeningTest(par, pop, new int[] {fatherInd}, par.FatherListeningThreshold)[0];
+            List<int> ChickSong = CoreLearningProcess(par, pop, chickInd, NewSong, FatherSong);
             return(ChickSong);
         }
 
@@ -72,7 +73,7 @@ namespace SongEvolutionModelLibrary
                 LoseSyls = Results.ConsensusSongs;
             }else{//Add&|Forget Learning
                 int[] Tutors = ChooseTutors(par, pop, Learners, notVacant);
-                AddSyls = ListeningTest(par, pop, Tutors);
+                AddSyls = ListeningTest(par, pop, Tutors, par.ListeningThreshold);
                 LoseSyls = AddSyls;
             }
 
@@ -99,7 +100,7 @@ namespace SongEvolutionModelLibrary
             for(int i=0;i<learners.Count;i++){
                 ConsensusSongs[i] = new List<int>{};
                 AddSyls[i] = new List<int>{};
-                AllSongs = ListeningTest(par, pop, tutors[i].ToArray());
+                AllSongs = ListeningTest(par, pop, tutors[i].ToArray(), par.ListeningThreshold);
                 CollapsedSongs = AllSongs.SelectMany(x => x).ToList();
                 ConsensusSongs[i] = CollapsedSongs.Distinct().ToList();
                 for(int j=0;j<ConsensusSongs[i].Count();j++){
@@ -256,18 +257,18 @@ namespace SongEvolutionModelLibrary
         }
 
         //Adult Learning-Specific Accessory functions
-        private static List<int>[] ListeningTest(SimParams par, Population pop, int[] tutors){
+        private static List<int>[] ListeningTest(SimParams par, Population pop, int[] tutors, float lisThresh){
             /*Get syls and test whether Repsize larger than listening threshold,
             if so, randomly remove extra syllables.*/
             List<int>[] TutorSyls = new List<int>[tutors.Length];
             for(int i=0;i<tutors.Length;i++){
                 TutorSyls[i] = pop.MaleSong[tutors[i]].ToList();
             }
-            if(par.ListeningThreshold >= .999 & par.ListeningThreshold <1){
+            if(lisThresh >= .999f & lisThresh <1){
                 return(TutorSyls);
             }
-            if(par.ListeningThreshold%1 == 0){//Absolute numer of sylls learned
-                int Thresh = (int)par.ListeningThreshold;
+            if(lisThresh%1 == 0){//Absolute number of sylls learned
+                int Thresh = (int)lisThresh;
                 int Remove;
                 for(int i=0;i<TutorSyls.Length;i++){
                     if(TutorSyls[i].Count>Thresh){
@@ -279,12 +280,14 @@ namespace SongEvolutionModelLibrary
                 float Learnable;
                 float Remove;
                 for(int i=0;i<TutorSyls.Length;i++){
-                    Learnable = TutorSyls[i].Count*par.ListeningThreshold;
-                    Learnable = par.NextFloat() < Learnable%1?
+                    Learnable = (TutorSyls[i].Count-par.MinLearnedSyllables)*lisThresh + par.MinLearnedSyllables;
+                    if(Learnable < TutorSyls[i].Count){
+                        Learnable = par.NextFloat() < Learnable%1?
                                 (float)Math.Ceiling(Learnable):(float)Math.Floor(Learnable);
-                    Remove = TutorSyls[i].Count-Learnable;
-                    if(Remove > 0){
-                        par.RandomSampleEqualNoReplace(TutorSyls[i], (int)Remove);
+                        Remove = TutorSyls[i].Count-Learnable;
+                        if(Remove > 0){
+                            par.RandomSampleEqualNoReplace(TutorSyls[i], (int)Remove);
+                        }
                     }
                 }
             }
@@ -313,7 +316,7 @@ namespace SongEvolutionModelLibrary
             List<int>[] AllSongs;
             List<int> CollapsedSongs;
             for(int i=0;i<Learners.Count;i++){
-                AllSongs = ListeningTest(par, pop, Tutors[i].ToArray());
+                AllSongs = ListeningTest(par, pop, Tutors[i].ToArray(), par.ListeningThreshold);
                 CollapsedSongs = AllSongs.SelectMany(x => x).ToList();
                 TutorSyls[i] = CollapsedSongs.Distinct().ToList();
             }

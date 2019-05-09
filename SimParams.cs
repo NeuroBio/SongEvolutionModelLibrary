@@ -10,20 +10,22 @@ namespace SongEvolutionModelLibrary{
     public class SimParams{
         public int Rows, Cols, NumBirds, Steps, InitialSyllableRepertoireSize,
                     MaxSyllableRepertoireSize, MaxAge, NumTutorConsensusStrategy,
-                    NumTutorOverLearn, NumDialects, SimStep, NumSim, Seed;
+                    NumTutorOverLearn, NumDialects, SimStep, MinLearnedSyllables, NumSim, Seed;
         public float PercentSyllableOverhang, InitialAccuracy, InheritedAccuracyNoise,
                     MaxAccuracy, MinAccuracy, InitialLearningThreshold,
                     InheritedLearningThresholdNoise, MaxLearningThreshold, MinLearningThreshold,
                     InitialChancetoInvent, InheritedChancetoInventNoise, MaxChancetoInvent,
-                    MinChancetoInvent,InitialChancetoForget, InheritedChancetoForgetNoise,
+                    MinChancetoInvent, InitialChancetoForget, InheritedChancetoForgetNoise,
                     MaxChancetoForget, MinChancetoForget,
-                    ListeningThreshold, EncounterSuccess, LearningPenalty, PercentDeath,
+                    ListeningThreshold, FatherListeningThreshold,
+                    EncounterSuccess, LearningPenalty, PercentDeath,
                     DeathThreshold, ChickSurvival, InitialSurvival, RepertoireSizePreference,
                     MatchPreference, NoisePreference, VerticalLearningCutOff;
         public string MaleDialects, ConsensusStrategy;
         public bool OverLearn, FemaleEvolution, SaveMatch, SaveAccuracy,
                     SaveLearningThreshold, SaveChancetoInvent, SaveChancetoForget,
-                    SaveNames, SaveAge, MatchUniform, ObliqueLearning,LogScale,
+                    SaveNames, SaveAge, MatchUniform, ObliqueLearning,
+                    VerticalLearning=true, LogScale,
                     ChooseMate, Consensus=false, Add=false, Forget=false,
                     LocalBreeding, LocalTutor, AgeDeath, SaveMSong, SaveFSong;
         public HashSet<int> AllSyls;
@@ -44,6 +46,7 @@ namespace SongEvolutionModelLibrary{
         float inheritedChancetoInventNoise = 0f, float maxChancetoInvent=1f,
         float minChancetoInvent = 0f, float initialChancetoForget = .2f,
         float inheritedChancetoForgetNoise = 0f, float listeningThreshold = 7f,
+        float fatherListeningThreshold = .999f,  int minLearnedSyl = 7,
         float encounterSuccess = .95f, float learningPenalty = .75f, float deathThreshold = 1,
         bool ageDeath = true, float percentDeath = .1f, bool saveMSong = false,
         float chickSurvival = .3f, bool localBreeding = false, bool localTutor = false,
@@ -56,7 +59,8 @@ namespace SongEvolutionModelLibrary{
         bool? saveChancetoForget  = null, bool saveNames  = false, bool chooseMate = false,
         bool saveAge  = false, int numSim = 1000, int seed = default(int),
         float minChancetoForget = 0f, float maxChancetoForget = 1f, 
-        bool obliqueLearning = true, float verticalLearningCutOff=.25f, bool reload = false,
+        bool obliqueLearning = true, bool verticalLearning = true,
+        float verticalLearningCutOff=.25f, bool reload = false,
         string path = default(string), bool errorCheck = true){    
             if(reload){
                 //Load in params, string split and assign
@@ -89,49 +93,52 @@ namespace SongEvolutionModelLibrary{
                     MinChancetoForget=float.Parse(Params[22], CultureInfo.InvariantCulture);
                     MaxChancetoForget=float.Parse(Params[23], CultureInfo.InvariantCulture);
                     ListeningThreshold=float.Parse(Params[24], CultureInfo.InvariantCulture);
-                    EncounterSuccess=float.Parse(Params[25], CultureInfo.InvariantCulture);
-                    LearningPenalty=float.Parse(Params[26], CultureInfo.InvariantCulture);
-                    AgeDeath=System.Convert.ToBoolean(Params[27]);
-                    PercentDeath=float.Parse(Params[28], CultureInfo.InvariantCulture);
-                    DeathThreshold=float.Parse(Params[29], CultureInfo.InvariantCulture);
-                    ChickSurvival=float.Parse(Params[30], CultureInfo.InvariantCulture);
-                    if(Params[31] != "NA\r"){
-                        InitialSurvival=float.Parse(Params[31], CultureInfo.InvariantCulture);
+                    FatherListeningThreshold=float.Parse(Params[25], CultureInfo.InvariantCulture);
+                    MinLearnedSyllables=System.Convert.ToInt32(Params[26]);
+                    EncounterSuccess=float.Parse(Params[27], CultureInfo.InvariantCulture);
+                    LearningPenalty=float.Parse(Params[28], CultureInfo.InvariantCulture);
+                    AgeDeath=System.Convert.ToBoolean(Params[29]);
+                    PercentDeath=float.Parse(Params[30], CultureInfo.InvariantCulture);
+                    DeathThreshold=float.Parse(Params[31], CultureInfo.InvariantCulture);
+                    ChickSurvival=float.Parse(Params[32], CultureInfo.InvariantCulture);
+                    if(Params[33] != "NA\r"){
+                        InitialSurvival=float.Parse(Params[33], CultureInfo.InvariantCulture);
                     }
-                    LocalBreeding=System.Convert.ToBoolean(Params[32]);
-                    LocalTutor=System.Convert.ToBoolean(Params[33]);
-                    Consensus=System.Convert.ToBoolean(Params[34]);
-                    ConsensusStrategy=Params[35].Replace("\r", "");                                     
-                    Add=System.Convert.ToBoolean(Params[36]);                  
-                    Forget=System.Convert.ToBoolean(Params[37]);                  
-                    NumTutorConsensusStrategy=System.Convert.ToInt32(Params[38]);
-                    OverLearn=System.Convert.ToBoolean(Params[39]);
-                    NumTutorOverLearn=System.Convert.ToInt32(Params[40]);
-                    ObliqueLearning=System.Convert.ToBoolean(Params[41]);
-                    VerticalLearningCutOff=float.Parse(Params[42], CultureInfo.InvariantCulture);
-                    RepertoireSizePreference=float.Parse(Params[43], CultureInfo.InvariantCulture);
-                    LogScale=System.Convert.ToBoolean(Params[44]);
-                    MatchPreference=float.Parse(Params[45], CultureInfo.InvariantCulture);
-                    NoisePreference=float.Parse(Params[46], CultureInfo.InvariantCulture);
-                    MatchUniform=System.Convert.ToBoolean(Params[47]);
-                    //MatchScale=System.Convert.ToInt32(Params[48]);
-                    NumDialects=System.Convert.ToInt32(Params[49]);
-                    MaleDialects=Params[50].Replace("\r", "");
-                    FemaleEvolution=System.Convert.ToBoolean(Params[51]);
-                    ChooseMate=System.Convert.ToBoolean(Params[52]);
-                    SaveMatch=System.Convert.ToBoolean(Params[53]);
-                    SaveAccuracy=System.Convert.ToBoolean(Params[54]);
-                    SaveLearningThreshold=System.Convert.ToBoolean(Params[55]);
-                    SaveChancetoInvent=System.Convert.ToBoolean(Params[56]);
-                    SaveChancetoForget=System.Convert.ToBoolean(Params[57]);
-                    SaveNames=System.Convert.ToBoolean(Params[58]);
-                    SaveAge=System.Convert.ToBoolean(Params[59]);
-                    SaveMSong=System.Convert.ToBoolean(Params[60]);
-                    SaveFSong=System.Convert.ToBoolean(Params[61]);
-                    //SimStep=System.Convert.ToInt32(Params[62]);
-                    NumSim=System.Convert.ToInt32(Params[63]);
-                    Seed=Params[64]=="NA\r"?
-                                0:System.Convert.ToInt32(Params[64]);
+                    LocalBreeding=System.Convert.ToBoolean(Params[34]);
+                    LocalTutor=System.Convert.ToBoolean(Params[35]);
+                    Consensus=System.Convert.ToBoolean(Params[36]);
+                    ConsensusStrategy=Params[37].Replace("\r", "");                                     
+                    Add=System.Convert.ToBoolean(Params[38]);                  
+                    Forget=System.Convert.ToBoolean(Params[39]);                  
+                    NumTutorConsensusStrategy=System.Convert.ToInt32(Params[40]);
+                    OverLearn=System.Convert.ToBoolean(Params[41]);
+                    NumTutorOverLearn=System.Convert.ToInt32(Params[42]);
+                    ObliqueLearning=System.Convert.ToBoolean(Params[43]);
+                    VerticalLearning=System.Convert.ToBoolean(Params[44]);
+                    VerticalLearningCutOff=float.Parse(Params[45], CultureInfo.InvariantCulture);
+                    RepertoireSizePreference=float.Parse(Params[46], CultureInfo.InvariantCulture);
+                    LogScale=System.Convert.ToBoolean(Params[47]);
+                    MatchPreference=float.Parse(Params[48], CultureInfo.InvariantCulture);
+                    NoisePreference=float.Parse(Params[49], CultureInfo.InvariantCulture);
+                    MatchUniform=System.Convert.ToBoolean(Params[50]);
+                    //MatchScale=System.Convert.ToInt32(Params[51]);
+                    NumDialects=System.Convert.ToInt32(Params[52]);
+                    MaleDialects=Params[53].Replace("\r", "");
+                    FemaleEvolution=System.Convert.ToBoolean(Params[54]);
+                    ChooseMate=System.Convert.ToBoolean(Params[55]);
+                    SaveMatch=System.Convert.ToBoolean(Params[56]);
+                    SaveAccuracy=System.Convert.ToBoolean(Params[57]);
+                    SaveLearningThreshold=System.Convert.ToBoolean(Params[58]);
+                    SaveChancetoInvent=System.Convert.ToBoolean(Params[59]);
+                    SaveChancetoForget=System.Convert.ToBoolean(Params[60]);
+                    SaveNames=System.Convert.ToBoolean(Params[61]);
+                    SaveAge=System.Convert.ToBoolean(Params[62]);
+                    SaveMSong=System.Convert.ToBoolean(Params[63]);
+                    SaveFSong=System.Convert.ToBoolean(Params[64]);
+                    //SimStep=System.Convert.ToInt32(Params[65]);
+                    NumSim=System.Convert.ToInt32(Params[66]);
+                    Seed=Params[67]=="NA\r"?
+                                0:System.Convert.ToInt32(Params[67]);
 
             }else{
                 Rows = rows; Cols = cols; NumBirds = rows*cols; Steps = steps;
@@ -153,7 +160,9 @@ namespace SongEvolutionModelLibrary{
                 MaxChancetoInvent = maxChancetoInvent; MinChancetoInvent = minChancetoInvent;
                 InitialChancetoForget = initialChancetoForget;
                 InheritedChancetoForgetNoise = inheritedChancetoForgetNoise;
-                ListeningThreshold = listeningThreshold; EncounterSuccess= encounterSuccess;
+                ListeningThreshold = listeningThreshold;
+                FatherListeningThreshold = fatherListeningThreshold;
+                EncounterSuccess= encounterSuccess;
                 LearningPenalty = learningPenalty; DeathThreshold = deathThreshold;
                 AgeDeath = ageDeath; PercentDeath=percentDeath;
                 ChickSurvival = chickSurvival; MatchUniform = matchUniform;
@@ -193,7 +202,8 @@ namespace SongEvolutionModelLibrary{
                 SaveLearningThreshold = TestRequirement(saveLearningThreshold, InheritedLearningThresholdNoise);
                 SaveChancetoInvent = TestRequirement(saveChancetoInvent, InheritedChancetoInventNoise);
                 SaveChancetoForget = TestRequirement(saveChancetoForget, InheritedChancetoForgetNoise);
-                SaveNames = saveNames; SaveAge = saveAge; SimStep = 1; ObliqueLearning= obliqueLearning;
+                SaveNames = saveNames; SaveAge = saveAge; SimStep = 1; ObliqueLearning=obliqueLearning;
+                VerticalLearning = verticalLearning;   MinLearnedSyllables = minLearnedSyl;             
                 NumSim = numSim; Seed=seed;
             }
             AllSyls = new HashSet<int>(Enumerable.Range(0,MaxSyllableRepertoireSize));
@@ -280,6 +290,11 @@ namespace SongEvolutionModelLibrary{
                     (ListeningThreshold > MaxSyllableRepertoireSize)  ||
                     ListeningThreshold < 0){
                 throw new System.ArgumentException(string.Format("ListeningThreshold must either be an integer from 1 to {0}, or a fraction representing a precentage.  If .999 or greater is typed, it is converted to 100%.", MaxSyllableRepertoireSize));
+            }
+            if((FatherListeningThreshold%1 != 0 && FatherListeningThreshold > 1) ||
+                    (FatherListeningThreshold > MaxSyllableRepertoireSize)  ||
+                    FatherListeningThreshold < 0){
+                throw new System.ArgumentException(string.Format("FatherListeningThreshold must either be an integer from 1 to {0}, or a fraction representing a precentage.  If .999 or greater is typed, it is converted to 100%.", MaxSyllableRepertoireSize));
             }          
             if(NumDialects < 1 ||
                 NumDialects >= NumBirds ||

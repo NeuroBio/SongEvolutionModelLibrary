@@ -110,34 +110,34 @@ namespace SongEvolutionModelLibrary
         }
         public void Output(SimParams par, string filePath, string tag, bool writePar = true){
             //Make the final .csvs
-            File.WriteAllText(filePath+"/"+tag+"SylRep.csv", SylRep.ToString());
+            File.WriteAllText(filePath+"/"+tag+"SylRep.csv", SylRep.ToString(), Encoding.UTF8);
             if(par.SaveMatch){
-                File.WriteAllText(filePath+"/"+tag+"Match.csv", Match.ToString());
+                File.WriteAllText(filePath+"/"+tag+"Match.csv", Match.ToString(), Encoding.UTF8);
             }
             if(par.SaveAge){
-                File.WriteAllText(filePath+"/"+tag+"Age.csv", Age.ToString());
+                File.WriteAllText(filePath+"/"+tag+"Age.csv", Age.ToString(), Encoding.UTF8);
             }
             if(par.SaveNames){
-                File.WriteAllText(filePath+"/"+tag+"Name.csv", Name.ToString());            
-                File.WriteAllText(filePath+"/"+tag+"FatherName.csv", FatherName.ToString());            
+                File.WriteAllText(filePath+"/"+tag+"Name.csv", Name.ToString(), Encoding.UTF8);            
+                File.WriteAllText(filePath+"/"+tag+"FatherName.csv", FatherName.ToString(), Encoding.UTF8);            
             }
             if(par.SaveLearningThreshold){
-                File.WriteAllText(filePath+"/"+tag+"LrnThrsh.csv", LearningThreshold.ToString());
+                File.WriteAllText(filePath+"/"+tag+"LrnThrsh.csv", LearningThreshold.ToString(), Encoding.UTF8);
             }
             if(par.SaveAccuracy){
-                File.WriteAllText(filePath+"/"+tag+"Acc.csv", Accuracy.ToString());
+                File.WriteAllText(filePath+"/"+tag+"Acc.csv", Accuracy.ToString(), Encoding.UTF8);
             }
             if(par.SaveChancetoForget){
-                File.WriteAllText(filePath+"/"+tag+"ChanFor.csv", ChanceForget.ToString());
+                File.WriteAllText(filePath+"/"+tag+"ChanFor.csv", ChanceForget.ToString(), Encoding.UTF8);
             }
             if(par.SaveChancetoInvent){
-                File.WriteAllText(filePath+"/"+tag+"ChanInv.csv", ChanceInvent.ToString());
+                File.WriteAllText(filePath+"/"+tag+"ChanInv.csv", ChanceInvent.ToString(), Encoding.UTF8);
             }
             if(par.SaveMSong){
-                File.WriteAllText(filePath+"/"+tag+"MSong.csv", MaleSong.ToString());
+                File.WriteAllText(filePath+"/"+tag+"MSong.csv", MaleSong.ToString(), Encoding.UTF8);
             }
             if(par.SaveFSong){
-                File.WriteAllText(filePath+"/"+tag+"FSong.csv", FemaleSong.ToString());
+                File.WriteAllText(filePath+"/"+tag+"FSong.csv", FemaleSong.ToString(), Encoding.UTF8);
             }
 
             //Save parameters is desired
@@ -172,6 +172,8 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"MinCtF={par.MinChancetoForget}");
             Par.AppendLine($"MaxCtF={par.MaxChancetoForget}");
             Par.AppendLine($"LisThrsh={par.ListeningThreshold}");
+            Par.AppendLine($"FLisThrsh={par.ListeningThreshold}");
+            Par.AppendLine($"MinLrnSyl={par.MinLearnedSyllables}");
             Par.AppendLine($"EnSuc={par.EncounterSuccess}");
             Par.AppendLine($"Lpen={par.LearningPenalty}");
             Par.AppendLine($"DStrat={par.AgeDeath}");
@@ -189,6 +191,7 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"OvrLrn={par.OverLearn}");
             Par.AppendLine($"OLNoTut={par.NumTutorOverLearn}");
             Par.AppendLine($"Obliq={par.ObliqueLearning}");
+            Par.AppendLine($"Vert={par.VerticalLearning}");
             Par.AppendLine($"VertLrnCut={par.VerticalLearningCutOff}");
             Par.AppendLine($"RepPref={par.RepertoireSizePreference}");
             Par.AppendLine($"LogScl={par.LogScale}");

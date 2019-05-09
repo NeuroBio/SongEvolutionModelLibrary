@@ -96,7 +96,11 @@ namespace SongEvolutionModelLibrary
             Accuracy[territory] = par.InheritedAccuracyNoise!=0?
                 (float)Inheritance(par.MinAccuracy, par.MaxAccuracy, Accuracy[father], par.InheritedAccuracyNoise, par.Rand)
                 :Accuracy[father];
-            MaleSong[territory] = Learning.VerticalLearning(par,this,father, territory); // need vertical learning function
+            if(par.VerticalLearning){
+                MaleSong[territory] = Learning.VerticalLearning(par, this, father, territory);
+            }else{
+                MaleSong[territory]=new List<int>{};
+            }
             SyllableRepertoire[territory] = MaleSong[territory].Count;
 
             //Optional
