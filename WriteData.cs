@@ -172,7 +172,7 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"MinCtF={par.MinChancetoForget}");
             Par.AppendLine($"MaxCtF={par.MaxChancetoForget}");
             Par.AppendLine($"LisThrsh={par.ListeningThreshold}");
-            Par.AppendLine($"FLisThrsh={par.ListeningThreshold}");
+            Par.AppendLine($"FLisThrsh={par.FatherListeningThreshold}");
             Par.AppendLine($"MinLrnSyl={par.MinLearnedSyllables}");
             Par.AppendLine($"EnSuc={par.EncounterSuccess}");
             Par.AppendLine($"Lpen={par.LearningPenalty}");
