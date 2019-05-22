@@ -25,7 +25,7 @@ namespace SongEvolutionModelLibrary{
         public bool OverLearn, FemaleEvolution, SaveMatch, SaveAccuracy,
                     SaveLearningThreshold, SaveChancetoInvent, SaveChancetoForget,
                     SaveNames, SaveAge, MatchUniform, ObliqueLearning,
-                    VerticalLearning=true, LogScale,
+                    VerticalLearning, LogScale,
                     ChooseMate, Consensus=false, Add=false, Forget=false,
                     LocalBreeding, LocalTutor, AgeDeath, SaveMSong, SaveFSong;
         public HashSet<int> AllSyls;
@@ -269,6 +269,7 @@ namespace SongEvolutionModelLibrary{
             CheckMin(MaxSyllableRepertoireSize, "MaxSyllableRepertoireSize",1f);
             CheckMin(PercentSyllableOverhang, "PercentSyllableOverhang",0f);
             CheckMin(EncounterSuccess,"EncounterSuccess");CheckMax(EncounterSuccess,"EncounterSuccess");
+            CheckMin(MinLearnedSyllables,"MinLearnedSyllables", 1);CheckMax(MinLearnedSyllables,"MinLearnedSyllables",MaxSyllableRepertoireSize);
             CheckMin(LearningPenalty,"LearningPenalty");
             CheckMin(NumTutorOverLearn,"NumTutorOverLearn",1f);
             CheckMin(NumTutorConsensusStrategy,"NumTutorConsensusStrategy",2f);
