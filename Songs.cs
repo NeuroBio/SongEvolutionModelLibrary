@@ -27,7 +27,7 @@ namespace SongEvolutionModelLibrary
                     for(int i=0;i<par.NumBirds;i++){
                         MaleSongs[i] = GenerateNovelSong(par);
                     }
-                    if(par.MaleDialects=="Similar"){
+                    if(par.MaleDialects=="Similar" && par.NumDialects > 1){
                         MaleSongs = EstablishDialects(par, MaleSongs);
                     }
                 }
