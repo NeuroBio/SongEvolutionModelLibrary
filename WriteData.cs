@@ -97,7 +97,7 @@ namespace SongEvolutionModelLibrary
                 for(int i=0; i<MSyls.Count;i++){
                     SylCount[MSyls[i]] += 1;
                 }
-                MaleSong.AppendLine(SylCount.Average().ToString());
+                MaleSong.AppendLine(string.Join(",", SylCount));
             }
             if(par.SaveFSong){
                 List<int> FSyls = pop.FemaleSong.SelectMany(x => x).ToList();
@@ -105,7 +105,7 @@ namespace SongEvolutionModelLibrary
                 for(int i=0; i<FSyls.Count;i++){
                     SylCount[FSyls[i]] += 1;
                 }
-                FemaleSong.AppendLine(SylCount.Average().ToString());
+                FemaleSong.AppendLine(string.Join(",", SylCount));
             }
         }
         public void Output(SimParams par, string filePath, string tag, bool writePar = true){
