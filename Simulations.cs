@@ -9,26 +9,34 @@ namespace SongEvolutionModelLibrary
 {  
     public class Simulations
     {
-        public static WriteData Basic(SimParams par, bool writeAll = true){
+        public static WriteData Basic(SimParams par, bool repAll=true, bool matchAll=true,
+        bool ageAll=true, bool lrnThrshAll=true, bool accAll=true, bool chanForAll=true,
+        bool chanInvAll=true){
             Population Pop = new Population(par);
             WriteData SimData = new WriteData();
-            SimData.Write(par, Pop, writeAll);
+            SimData.Write(par, Pop, repAll, matchAll, ageAll,
+            lrnThrshAll, accAll, chanForAll, chanInvAll);
             //Simulation and saving data         
             for(int i=0;i<par.NumSim;i++){
                 Pop = BirthDeathCycle.Step(par,Pop);
-                SimData.Write(par, Pop, writeAll);
+                SimData.Write(par, Pop, repAll, matchAll, ageAll,
+                lrnThrshAll, accAll, chanForAll, chanInvAll);
             }
             return(SimData);
         }
-        public static WriteData Interval(SimParams par, int Frequency=200, bool writeAll = true){
+        public static WriteData Interval(SimParams par, int Frequency=200,
+        bool repAll=true, bool matchAll=true, bool ageAll=true, bool lrnThrshAll=true,
+        bool accAll=true, bool chanForAll=true, bool chanInvAll=true){
             Population Pop = new Population(par);
             WriteData SimData = new WriteData();
-            SimData.Write(par, Pop, writeAll);
+            SimData.Write(par, Pop, repAll, matchAll, ageAll,
+            lrnThrshAll, accAll, chanForAll, chanInvAll);
             //Simulation and saving data         
             for(int i=0;i<par.NumSim;i++){
                 Pop = BirthDeathCycle.Step(par,Pop);
                 if((i+1)%Frequency == 0){
-                    SimData.Write(par, Pop, writeAll);
+                    SimData.Write(par, Pop, repAll, matchAll, ageAll,
+                    lrnThrshAll, accAll, chanForAll, chanInvAll);
                 }
             }
             return(SimData);

@@ -70,12 +70,12 @@ namespace SongEvolutionModelLibrary
         private static List<int> GenerateNovelSong(SimParams par){
             //Test whether each syllable is learned
             List<int> Song = new List<int>();
-            for(int i=0; i<par.SongCore.Count;i++){
-                if(par.NextFloat() < par.SongCore[i]){
-                    Song.Add(i);}
+            while(Song.Count == 0){
+                for(int i=0; i<par.SongCore.Count;i++){
+                    if(par.NextFloat() < par.SongCore[i]){
+                        Song.Add(i);}
+                }
             }
-
-            //Unlearnable syls set to 0
             return(Song);
         }
         private static List<int>[] EstablishDialects(SimParams par, List<int>[] fSongs){

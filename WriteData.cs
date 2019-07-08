@@ -22,37 +22,46 @@ namespace SongEvolutionModelLibrary
         StringBuilder FemaleSong = new StringBuilder();
 
 
-        public void Write(SimParams par, Population pop, bool All=true){
-            //save the data for each step
-            if(All){
-                WriteAll(par, pop);
-            }else{
-                WriteAve(par, pop);
-            }
-        }
-        private void WriteAll(SimParams par, Population pop){
-            SylRep.AppendLine(string.Join(",", pop.SyllableRepertoire));
+        public void Write(SimParams par, Population pop, bool repAll=true, bool matchAll=true,
+        bool ageAll=true, bool lrnThrshAll=true, bool accAll=true, bool chanForAll=true,
+        bool chanInvAll=true){
+            
+            SylRep.AppendLine(repAll ?
+                string.Join(",", pop.SyllableRepertoire) :
+                pop.SyllableRepertoire.Average().ToString());
             if(par.SaveMatch){
-                Match.AppendLine(string.Join(",", pop.Match));
+                Match.AppendLine(matchAll ?
+                string.Join(",", pop.Match) :
+                pop.Match.Average().ToString());
             }
             if(par.SaveAge){
-                Age.AppendLine(string.Join(",", pop.Age));
+                Age.AppendLine(ageAll ?
+                    string.Join(",", pop.Age) :
+                    pop.Age.Average().ToString());
             }
             if(par.SaveNames){
-                Name.AppendLine(pop.Name.ToString());
+                Name.AppendLine(string.Join(",", pop.Name));
                 FatherName.AppendLine(string.Join(",", pop.FatherName));
             }
             if(par.SaveLearningThreshold){
-                LearningThreshold.AppendLine(string.Join(",", pop.LearningThreshold));
+                LearningThreshold.AppendLine(lrnThrshAll ?
+                string.Join(",", pop.LearningThreshold) :
+                pop.LearningThreshold.Average().ToString());
             }
             if(par.SaveAccuracy){
-                Accuracy.AppendLine(string.Join(",", pop.Accuracy));
+                Accuracy.AppendLine(accAll ?
+                string.Join(",", pop.Accuracy) :
+                pop.Accuracy.Average().ToString());
             }
             if(par.SaveChancetoForget){
-                ChanceForget.AppendLine(string.Join(",", pop.ChanceForget));
+                ChanceForget.AppendLine(chanForAll ?
+                string.Join(",", pop.ChanceForget) :
+                pop.ChanceForget.Average().ToString());
             }
             if(par.SaveChancetoInvent){
-                ChanceInvent.AppendLine(string.Join(",", pop.ChanceInvent));
+                ChanceInvent.AppendLine(chanInvAll ?
+                string.Join(",", pop.ChanceInvent) :
+                pop.ChanceInvent.Average().ToString());
             }
             if(par.SaveMSong){
                 List<int> MSyls = pop.MaleSong.SelectMany(x => x).ToList();
@@ -71,43 +80,7 @@ namespace SongEvolutionModelLibrary
                 FemaleSong.AppendLine(string.Join(",", SylCount));
             }
         }
-        private void WriteAve(SimParams par, Population pop){
-            SylRep.AppendLine(pop.SyllableRepertoire.Average().ToString());
-            if(par.SaveMatch){
-                Match.AppendLine(pop.Match.Average().ToString());
-            }
-            if(par.SaveAge){
-                Age.AppendLine(pop.Age.Average().ToString());
-            }
-            if(par.SaveLearningThreshold){
-                LearningThreshold.AppendLine(pop.LearningThreshold.Average().ToString());
-            }
-            if(par.SaveAccuracy){
-                Accuracy.AppendLine(pop.Accuracy.Average().ToString());
-            }
-            if(par.SaveChancetoForget){
-                ChanceForget.AppendLine(pop.ChanceForget.Average().ToString());
-            }
-            if(par.SaveChancetoInvent){
-                ChanceInvent.AppendLine(pop.ChanceInvent.Average().ToString());
-            }
-            if(par.SaveMSong){
-                List<int> MSyls = pop.MaleSong.SelectMany(x => x).ToList();
-                int[] SylCount = Enumerable.Repeat(0, par.MaxSyllableRepertoireSize).ToArray();
-                for(int i=0; i<MSyls.Count;i++){
-                    SylCount[MSyls[i]] += 1;
-                }
-                MaleSong.AppendLine(string.Join(",", SylCount));
-            }
-            if(par.SaveFSong){
-                List<int> FSyls = pop.FemaleSong.SelectMany(x => x).ToList();
-                int[] SylCount = Enumerable.Repeat(0, par.MaxSyllableRepertoireSize).ToArray();
-                for(int i=0; i<FSyls.Count;i++){
-                    SylCount[FSyls[i]] += 1;
-                }
-                FemaleSong.AppendLine(string.Join(",", SylCount));
-            }
-        }
+        
         public void Output(SimParams par, string filePath, string tag, bool writePar = true){
             //Make the final .csvs
             File.WriteAllText(filePath+"/"+tag+"SylRep.csv", SylRep.ToString(), Encoding.UTF8);
