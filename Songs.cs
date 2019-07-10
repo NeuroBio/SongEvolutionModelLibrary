@@ -22,7 +22,9 @@ namespace SongEvolutionModelLibrary
             }else{//Matching context
                 FemaleSongs = GenerateFemaleSongs(par);
                 if(par.MaleDialects=="Same"){
-                    MaleSongs = FemaleSongs.ToArray();
+                    for(int i=0;i<MaleSongs.Length;i++){
+                        MaleSongs[i] = FemaleSongs[i].ToList();
+                    }
                 }else{
                     for(int i=0;i<par.NumBirds;i++){
                         MaleSongs[i] = GenerateNovelSong(par);
