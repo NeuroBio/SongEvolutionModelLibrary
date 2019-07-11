@@ -16,6 +16,7 @@ namespace SongEvolutionModelLibrary
         public string[] Name,FatherName;
         public float[] Accuracy,LearningThreshold,
                     ChanceInvent,ChanceForget, Match;
+        public float[] Bred;
         public List<int>[] MaleSong,FemaleSong;
         public List<float> SurvivalChance;public float SurvivalStore;
 
@@ -52,6 +53,8 @@ namespace SongEvolutionModelLibrary
                 }
             }
 
+            Bred = Enumerable.Repeat(.1f, par.NumBirds).ToArray();
+
             //Set up distributions for noisy inheritence as needed and fill out arrays
             Accuracy = InitialDistributions(par, par.InheritedAccuracyNoise, par.InitialAccuracy,
                                             par.MaxAccuracy, par.MinAccuracy);    
@@ -80,6 +83,7 @@ namespace SongEvolutionModelLibrary
         }
         public void ReplaceBird(SimParams par, int father, int territory){
             //manditory
+            Bred[territory] = 0;
             Age[territory] = 0;
             /*Each set either takes the fathers value or calculates a new values based on a
             Distribution about the father's value.*/ 

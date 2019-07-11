@@ -176,6 +176,9 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"MDial={par.MaleDialects}");
             Par.AppendLine($"FEvo={par.FemaleEvolution}");
             Par.AppendLine($"ChoMate={par.ChooseMate}");
+            Par.AppendLine($"Social={par.SocialCues}");
+            Par.AppendLine($"SocialBred={par.SocialBred}");
+            Par.AppendLine($"SocialNotBred={par.SocialNotBred}");
             Par.AppendLine($"SMat={par.SaveMatch}");
             Par.AppendLine($"SAcc={par.SaveAccuracy}");
             Par.AppendLine($"SLrn={par.SaveLearningThreshold}");

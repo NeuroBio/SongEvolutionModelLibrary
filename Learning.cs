@@ -226,7 +226,16 @@ namespace SongEvolutionModelLibrary
                 for(int i=0;i<learners.Count;i++){
                     PotentialTutors = PotentialTutorsTemp.ToList();
                     PotentialTutors.Remove(learners[i]);
-                    Tutors[i] = PotentialTutors[par.RandomSampleEqualReplace(PotentialTutors,1)[0]];
+
+                    if(par.SocialCues){
+                        float[] TutorProbs = new float[PotentialTutors.Count];
+                        for(int j=0;j<TutorProbs.Length;j++){
+                            TutorProbs[j] = pop.Bred[PotentialTutors[j]]; 
+                        }
+                        Tutors[i] = PotentialTutors[par.RandomSampleUnequal(TutorProbs, 1)[0]];
+                    }else{
+                        Tutors[i] = PotentialTutors[par.RandomSampleEqualReplace(PotentialTutors, 1)[0]];
+                    }
                 }
             }
             return(Tutors);
@@ -250,7 +259,19 @@ namespace SongEvolutionModelLibrary
                 for(int i=0;i<learners.Count;i++){
                     PotentialTutors = PotentialTutorsTemp.ToList();
                     PotentialTutors.Remove(learners[i]);
-                    Tutors[i] = par.RandomSampleEqualNoReplace(PotentialTutors, numTutors).ToList();
+                    if(par.SocialCues){
+                        float[] TutorProbs = new float[PotentialTutors.Count];
+                        for(int j=0;j<TutorProbs.Length;j++){
+                            TutorProbs[j] = pop.Bred[PotentialTutors[j]];
+                        }
+                        int[] ChosenIndex = par.RandomSampleUnequal(TutorProbs, numTutors);
+                        for(int j=0;j<numTutors;j++){
+                            ChosenIndex[j] = PotentialTutors[ChosenIndex[j]];
+                        }
+                        Tutors[i] = ChosenIndex.ToList();
+                    }else{
+                        Tutors[i] = par.RandomSampleEqualNoReplace(PotentialTutors, numTutors).ToList();
+                    }
                 }
             }
             return(Tutors);

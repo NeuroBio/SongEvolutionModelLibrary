@@ -20,12 +20,13 @@ namespace SongEvolutionModelLibrary{
                     ListeningThreshold, FatherListeningThreshold,
                     EncounterSuccess, LearningPenalty, PercentDeath,
                     DeathThreshold, ChickSurvival, InitialSurvival, RepertoireSizePreference,
-                    MatchPreference, NoisePreference, VerticalLearningCutOff;
+                    MatchPreference, NoisePreference, VerticalLearningCutOff,
+                    SocialBred, SocialNotBred;
         public string MaleDialects, ConsensusStrategy;
         public bool OverLearn, FemaleEvolution, SaveMatch, SaveAccuracy,
                     SaveLearningThreshold, SaveChancetoInvent, SaveChancetoForget,
                     SaveNames, SaveAge, MatchUniform, ObliqueLearning,
-                    VerticalLearning, LogScale,
+                    VerticalLearning, LogScale, SocialCues,
                     ChooseMate, Consensus=false, Add=false, Forget=false,
                     LocalBreeding, LocalTutor, AgeDeath, SaveMSong, SaveFSong;
         public HashSet<int> AllSyls;
@@ -60,6 +61,7 @@ namespace SongEvolutionModelLibrary{
         bool saveAge  = false, int numSim = 1000, int seed = default(int),
         float minChancetoForget = 0f, float maxChancetoForget = 1f, 
         bool obliqueLearning = true, bool verticalLearning = true,
+        bool socialCues = false, float socialBred = .9f, float socialNotBred = .1f,
         float verticalLearningCutOff=.25f, bool reload = false,
         string path = default(string), bool errorCheck = true){    
             if(reload){
@@ -126,20 +128,22 @@ namespace SongEvolutionModelLibrary{
                     MaleDialects=Params[53].Replace("\r", "");
                     FemaleEvolution=System.Convert.ToBoolean(Params[54]);
                     ChooseMate=System.Convert.ToBoolean(Params[55]);
-                    SaveMatch=System.Convert.ToBoolean(Params[56]);
-                    SaveAccuracy=System.Convert.ToBoolean(Params[57]);
-                    SaveLearningThreshold=System.Convert.ToBoolean(Params[58]);
-                    SaveChancetoInvent=System.Convert.ToBoolean(Params[59]);
-                    SaveChancetoForget=System.Convert.ToBoolean(Params[60]);
-                    SaveNames=System.Convert.ToBoolean(Params[61]);
-                    SaveAge=System.Convert.ToBoolean(Params[62]);
-                    SaveMSong=System.Convert.ToBoolean(Params[63]);
-                    SaveFSong=System.Convert.ToBoolean(Params[64]);
-                    //SimStep=System.Convert.ToInt32(Params[65]);
-                    NumSim=System.Convert.ToInt32(Params[66]);
-                    Seed=Params[67]=="NA\r"?
-                                0:System.Convert.ToInt32(Params[67]);
-
+                    SocialCues=System.Convert.ToBoolean(Params[56]);
+                    SocialBred=float.Parse(Params[57], CultureInfo.InvariantCulture);
+                    SocialNotBred=float.Parse(Params[58], CultureInfo.InvariantCulture);
+                    SaveMatch=System.Convert.ToBoolean(Params[59]);
+                    SaveAccuracy=System.Convert.ToBoolean(Params[60]);
+                    SaveLearningThreshold=System.Convert.ToBoolean(Params[61]);
+                    SaveChancetoInvent=System.Convert.ToBoolean(Params[62]);
+                    SaveChancetoForget=System.Convert.ToBoolean(Params[63]);
+                    SaveNames=System.Convert.ToBoolean(Params[64]);
+                    SaveAge=System.Convert.ToBoolean(Params[65]);
+                    SaveMSong=System.Convert.ToBoolean(Params[66]);
+                    SaveFSong=System.Convert.ToBoolean(Params[67]);
+                    //SimStep=System.Convert.ToInt32(Params[68]);
+                    NumSim=System.Convert.ToInt32(Params[69]);
+                    Seed=Params[70]=="NA\r"?
+                                0:System.Convert.ToInt32(Params[70]);
             }else{
                 Rows = rows; Cols = cols; NumBirds = rows*cols; Steps = steps;
                 InitialSyllableRepertoireSize = initialSyllableRepertoireSize;
@@ -190,6 +194,9 @@ namespace SongEvolutionModelLibrary{
                         throw new System.ArgumentException("learningStrategy must be either: Add, AddForget, Forget, or Consensus");
                     }
                 }
+                SocialCues = socialCues;
+                SocialBred=socialBred;
+                SocialNotBred=socialNotBred;
                 NumTutorConsensusStrategy = numTutorConsensusStrategy;
                 OverLearn = overLearn; NumTutorOverLearn = numTutorOverLearn;
                 RepertoireSizePreference = repertoireSizePreference;
@@ -198,7 +205,7 @@ namespace SongEvolutionModelLibrary{
                 NumDialects = numDialects; MaleDialects = maleDialects;
                 FemaleEvolution = femaleEvolution; LogScale = logScale;
                 SaveMatch = TestRequirement(saveMatch, MatchPreference, femaleEvolution);
-                SaveAccuracy=TestRequirement(saveAccuracy, InheritedAccuracyNoise);
+                SaveAccuracy = TestRequirement(saveAccuracy, InheritedAccuracyNoise);
                 SaveLearningThreshold = TestRequirement(saveLearningThreshold, InheritedLearningThresholdNoise);
                 SaveChancetoInvent = TestRequirement(saveChancetoInvent, InheritedChancetoInventNoise);
                 SaveChancetoForget = TestRequirement(saveChancetoForget, InheritedChancetoForgetNoise);
@@ -264,7 +271,9 @@ namespace SongEvolutionModelLibrary{
             CheckMin(Rows, "Rows",3);
             CheckMin(Cols, "Cols",3);
             CheckMin(Steps, "Steps",1);
-            CheckMin(NumSim, "NumSims",1);                      
+            CheckMin(NumSim, "NumSims",1);
+            CheckMin(SocialBred, "SocialBred",.01f);CheckMax(SocialBred, "SocialBred",.99f);
+            CheckMin(SocialNotBred, "SocialNotBred",.01f);CheckMax(SocialNotBred, "SocialNotBred",.99f);
             CheckMin(InitialSyllableRepertoireSize, "InitialSyllableRepertoireSize",1f);
             CheckMin(MaxSyllableRepertoireSize, "MaxSyllableRepertoireSize",1f);
             CheckMin(PercentSyllableOverhang, "PercentSyllableOverhang",0f);
