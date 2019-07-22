@@ -47,11 +47,7 @@ namespace SongEvolutionModelLibrary
             }
             if(par.ChooseMate){
                 Songs.ChooseMates(par, pop);
-            }                      
-            //update survival probability
-            if(par.AgeDeath){
-                UpdateDeathProbabilities(par, pop, FatherInd);
-            }
+            } 
             if(par.SocialCues){
                 HashSet<int> Fathers = FatherInd.ToHashSet();
                 for(int i=0;i<par.NumBirds;i++){
@@ -61,8 +57,11 @@ namespace SongEvolutionModelLibrary
                         pop.Bred[i] = par.SocialNotBred;
                     }
                 }
+            }                    
+            //update survival probability
+            if(par.AgeDeath){
+                UpdateDeathProbabilities(par, pop, FatherInd);
             }
-
             return(pop);
         }
 

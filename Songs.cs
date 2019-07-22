@@ -15,7 +15,7 @@ namespace SongEvolutionModelLibrary
             MaleSongs = new List<int>[par.NumBirds];
             FemaleSongs = new List<int>[par.NumBirds];
             
-            if(!par.SaveMatch){
+            if(par.MatchPreference == 0 || !par.SaveMatch){
                 for(int i=0;i<par.NumBirds;i++){
                 MaleSongs[i] = GenerateNovelSong(par);
                 }

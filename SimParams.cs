@@ -316,7 +316,7 @@ namespace SongEvolutionModelLibrary{
                 throw new System.ArgumentException("MaleDialects must be None, Similar, or Same.");
             }
              if(ConsensusStrategy != "Conform" && ConsensusStrategy != "AllNone" && ConsensusStrategy != "Percentage"){
-                throw new System.ArgumentException("MaleDialects must be Conform, AllNone, or Percentage.");
+                throw new System.ArgumentException("ConsensusStrategy must be Conform, AllNone, or Percentage.");
             }
             if(MatchPreference == 0  && SaveMatch == false && SaveFSong == true){
                 throw new System.ArgumentException("Cannot save female song unless it is generated. It is not generated unless 1) MatchPrefer > 0, 2) FemaleEvolve == TRUE,or 3) SaveMatch == TRUE.");
@@ -326,8 +326,8 @@ namespace SongEvolutionModelLibrary{
             if(FemaleEvolution==true && MatchPreference == 0){
                 Console.WriteLine("Warning: FemaleEvolve implimented only when females have a match preference > 0.");
             }
-            if(MatchPreference == 0 && MaleDialects != "None"){
-                Console.WriteLine("Warning: MaleDialects only implemented when match preference > 0.");
+            if(MatchPreference == 0 && !SaveMatch && MaleDialects != "None"){
+                Console.WriteLine("Warning: MaleDialects only implemented when match preference > 0 or SaveMatch is manually set to true.");
             }
             if(DeathThreshold < 1){
                 Console.WriteLine("Warning: Small DeathThresholds decrease the chances that any birds will survive the selection process long enough to reach the MaxAge.");

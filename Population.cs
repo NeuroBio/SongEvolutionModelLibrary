@@ -112,7 +112,7 @@ namespace SongEvolutionModelLibrary
                 Name[territory] = System.Guid.NewGuid().ToString();
                 FatherName[territory] = Name[father];
             }
-            if(par.SaveMatch){
+            if(par.MatchPreference != 0 || par.SaveMatch){
                 Match[territory] = Songs.GetMatch(par, MaleSong[territory], FemaleSong[territory]);
             }
         }

@@ -219,7 +219,11 @@ namespace SongEvolutionModelLibrary
                 HashSet<int> Unavailable = new HashSet<int>(Enumerable.Range(0, par.NumBirds));
                 Unavailable.ExceptWith(PotentialTutorsTemp);
                 for(int i=0;i<learners.Count;i++){
-                    Tutors[i] = Locations.GetLocalBirds(par, pop, learners[i], Unavailable)[0];
+                    if(par.SocialCues){
+                        Tutors[i] = Locations.GetLocalBirds(par, pop, learners[i], Unavailable, 1, pop.Bred)[0];
+                    }else{
+                        Tutors[i] = Locations.GetLocalBirds(par, pop, learners[i], Unavailable)[0];
+                    }
                 }
             }else{//drawn individually so no learner is his own tutor
                 List<int> PotentialTutors;
@@ -252,7 +256,11 @@ namespace SongEvolutionModelLibrary
                 HashSet<int> Unavailable = new HashSet<int>(Enumerable.Range(0, par.NumBirds));
                 Unavailable.ExceptWith(PotentialTutorsTemp);
                 for(int i=0;i<learners.Count;i++){
-                    Tutors[i] = Locations.GetLocalBirds(par, pop, learners[i], Unavailable, numTutors).ToList();
+                    if(par.SocialCues){
+                        Tutors[i] = Locations.GetLocalBirds(par, pop, learners[i], Unavailable, numTutors, pop.Bred).ToList();
+                    }else{
+                        Tutors[i] = Locations.GetLocalBirds(par, pop, learners[i], Unavailable, numTutors).ToList();
+                    }
                 }
             }else{
                 List<int> PotentialTutors;
