@@ -15,7 +15,7 @@ namespace SongEvolutionModelLibrary
                     CurrentStep = NextStepDirections(CurrentStep, FirstStep);
                 }
             }
-            List<List<int>>[] AllSteps = new List<List<int>>[par.Rows-(par.Steps+1)];
+            List<List<int>>[] AllSteps = new List<List<int>>[Math.Max(par.Rows, par.Cols)-(par.Steps+1)];
             AllSteps[0] = CurrentStep;
             
             for(int i=1;i<AllSteps.Length;i++){
