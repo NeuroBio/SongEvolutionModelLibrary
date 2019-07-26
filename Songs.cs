@@ -82,31 +82,23 @@ namespace SongEvolutionModelLibrary
         }
         private static List<int>[] EstablishDialects(SimParams par, List<int>[] fSongs){
             List<int> Facts = PrimeFactorization(par.NumDialects);
-
-            //get the dimentions of the submatricies for each dialect
             Facts.Reverse();
-            int[] Divisors;
-            if(Facts.Count() == 1){
-                Divisors = new int[] {1,Facts[0]};
-            }else{
-                int First = Facts[0];
-                int Second = Facts[Facts.Count()-1];
-                if(Facts.Count>2){
-                    for(int i=1;i<(Facts.Count()-1);i++){
-                        if(Facts[i]*First < Facts[i]*Second){
-                            First = Facts[i]*First;
-                        }else{
-                            Second = Facts[i]*Second;
-                        }
+            //get the dimentions of the submatricies for each dialect
+            int[] Divisors = new int[2]{1,1};
+            for(int i=0;i<Facts.Count;i++){
+                if(par.Rows%(Facts[i]*Divisors[0])!=0){//rows not divisible by factor
+                Divisors[1] *=Facts[i];
+                }else if(par.Cols%(Facts[i]*Divisors[1])!=0){//cols not divisible by factor
+                Divisors[0] *=Facts[i];
+                }else{
+                    if(Facts[i]*Divisors[0]/par.Rows < Facts[i]*Divisors[1]/par.Cols){ //affects Cols more than rows
+                        Divisors[0] *=Facts[i];
+                    }else{//affects rows more or equally to cols
+                        Divisors[1] *=Facts[i];
                     }
                 }
-                if(First < Second){
-                    Divisors = new int[] {First, Second};
-                }else{Divisors = new int[] {Second,First};}
             }
-            if(par.Rows < par.Cols){
-                Divisors.Reverse();
-            }
+
             int SplitRow = par.Rows/Divisors[0];
             int SplitCol = par.Cols/Divisors[1];
             int CoreLength = par.InitialSyllableRepertoireSize +
@@ -140,14 +132,14 @@ namespace SongEvolutionModelLibrary
             }
             return(fSongs);
         }
-        private static List<int> PrimeFactorization(int birds){
+        private static List<int> PrimeFactorization(int dials){
             List<int> PrimeFactors= new List<int> {};
-            for (int b=2;birds>1; b++){
-                if (birds%b == 0){
+            for (int b=2;dials>1; b++){
+                if (dials%b == 0){
 
                     int x = 0;
-                    while (birds%b == 0){
-                        birds/=b;
+                    while (dials%b == 0){
+                        dials/=b;
                         x++;
                     }
                     PrimeFactors.AddRange(Enumerable.Repeat(b,x).ToList());
