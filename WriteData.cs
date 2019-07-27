@@ -169,6 +169,8 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"RepPref={par.RepertoireSizePreference}");
             Par.AppendLine($"LogScl={par.LogScale}");
             Par.AppendLine($"MatPref={par.MatchPreference}");
+            Par.AppendLine($"FreqPref={par.FrequencyPreference}");
+            Par.AppendLine($"Rare={par.RarePrefered}");
             Par.AppendLine($"NoisePref={par.NoisePreference}");
             Par.AppendLine($"UniMat={par.MatchUniform}");
             Par.AppendLine($"MScl=1");

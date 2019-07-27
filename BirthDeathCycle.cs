@@ -241,10 +241,23 @@ namespace SongEvolutionModelLibrary
             //Get the bonus for each category, combine, and return
             //Choices <- PotentialFathers$Males[UsableInd,]
             float[] FullBonus = new float[usableMales.Count];
-            //Noise
             float[] NoiseBonus = Enumerable.Repeat(par.NoisePreference, usableMales.Count).ToArray();
-            //Rep
-            float[] RepBonus = new float[usableMales.Count];
+            float[] RepBonus = CalculateRepertoireSizeBonus(par, pop, usableMales);
+            float[] FreqBonus = CalculateMatchBonus(par, pop, usableMales);
+            float[] MatBonus = CalculateFrequencyBonus(par, pop, usableMales);
+            
+            //Merge
+            for(int i=0;i<usableMales.Count;i++){
+                FullBonus[i] = NoiseBonus[i] + RepBonus[i] + MatBonus[i] + FreqBonus[i];
+                if(FullBonus[i] < .001f){FullBonus[i] = .001f;}
+            }
+
+            return(FullBonus);
+        }
+        
+        private static float[] CalculateRepertoireSizeBonus(SimParams par, Population pop,
+        List<int> usableMales){
+             float[] RepBonus = new float[usableMales.Count];
             if(par.RepertoireSizePreference != 0){
                 float[] Rep = new float[usableMales.Count];
                 if(par.LogScale){
@@ -268,29 +281,67 @@ namespace SongEvolutionModelLibrary
 
                 }
             }else{RepBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}
-            
-            //Match
+            return(RepBonus);
+        }
+        private static float[] CalculateMatchBonus(SimParams par, Population pop,
+        List<int> usableMales){
             float[] MatBonus = new float[usableMales.Count];
             if(par.MatchPreference != 0){
                 float Bonus;
                 for(int i=0;i<usableMales.Count;i++){
                     Bonus = par.MatchPreference*pop.Match[usableMales[i]];
-                    if(Bonus < .001){Bonus = .001f;}
-                    MatBonus[i] = Bonus;
                 }
             }else{MatBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}
-
-            //Merge
-            for(int i=0;i<usableMales.Count;i++){
-                FullBonus[i] = NoiseBonus[i] + RepBonus[i] + MatBonus[i]; 
-            }
-            List<int> WorstMales = Enumerable.Range(0, FullBonus.Length).Where(x => FullBonus[x] < .001f).ToList();
-                for(int i=0;i<WorstMales.Count;i++){  
-                    FullBonus[WorstMales[i]] = .001f;                 
-                }
-            return(FullBonus);
+            return(MatBonus);
         }
-        
+        private static float[] CalculateFrequencyBonus(SimParams par, Population pop,
+        List<int> usableMales){
+            float[] FreqBonus = new float[usableMales.Count];
+            if(par.FrequencyPreference != 0){
+                int[] RawSyllableCounts = new int[par.MaxSyllableRepertoireSize];
+                
+                //set up the frequency scores
+                for(int i=0;i<usableMales.Count;i++){
+                    for(int j=0;j<pop.MaleSong[usableMales[i]].Count;j++){
+                        RawSyllableCounts[pop.MaleSong[usableMales[i]][j]] += 1;
+                    }
+                }
+                float[] FinalSyllableCounts = new float[par.MaxSyllableRepertoireSize];
+                if(par.RarePrefered){
+                    for(int i=0;i<RawSyllableCounts.Length;i++){
+                        FinalSyllableCounts[i] = 1 - RawSyllableCounts[i]/(float)par.NumBirds; 
+                    }
+                }else{
+                    for(int i=0;i<RawSyllableCounts.Length;i++){
+                        FinalSyllableCounts[i] = RawSyllableCounts[i]/(float)par.NumBirds; 
+                    }
+                }
+                
+                //Get each male's score
+                float[] Rarity = new float[usableMales.Count];
+                float Score;
+                for(int i=0;i<usableMales.Count;i++){
+                    Score = 0f;
+                    for(int j=0;j<pop.MaleSong[usableMales[i]].Count;j++){
+                        Score += FinalSyllableCounts[pop.MaleSong[usableMales[i]][j]];
+                    }
+                    Rarity[i] = Score;
+                }
+
+                //standardize
+                float Worst = Rarity.Min();
+                float Best = Rarity.Max();
+                if(Worst == Best){
+                  FreqBonus = Enumerable.Repeat(par.FrequencyPreference, usableMales.Count).ToArray();  
+                }else{
+                    float Fraction = 1f/(Best - Worst);
+                    for(int i=0;i<usableMales.Count;i++){
+                        Rarity[i] = ((Rarity[i] - Worst)*Fraction)*par.FrequencyPreference;
+                    }
+                }
+            }else{FreqBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}
+            return(FreqBonus);
+        }
         //Reset for next run        
         private static Population UpdateDeathProbabilities(SimParams par, Population pop, 
         int[] fatherInd){
