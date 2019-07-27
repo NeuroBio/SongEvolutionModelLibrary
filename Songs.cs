@@ -91,7 +91,7 @@ namespace SongEvolutionModelLibrary
                 }else if(par.Cols%(Facts[i]*Divisors[1])!=0){//cols not divisible by factor
                 Divisors[0] *=Facts[i];
                 }else{
-                    if(Facts[i]*Divisors[0]/par.Rows < Facts[i]*Divisors[1]/par.Cols){ //affects Cols more than rows
+                    if(Facts[i]*Divisors[0]/(float)par.Rows < Facts[i]*Divisors[1]/(float)par.Cols){ //affects Cols more than rows
                         Divisors[0] *=Facts[i];
                     }else{//affects rows more or equally to cols
                         Divisors[1] *=Facts[i];
