@@ -169,11 +169,13 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"RepPref={par.RepertoireSizePreference}");
             Par.AppendLine($"LogScl={par.LogScale}");
             Par.AppendLine($"MatPref={par.MatchPreference}");
+            Par.AppendLine($"MStrat={par.MatchStrategy}");
             Par.AppendLine($"FreqPref={par.FrequencyPreference}");
             Par.AppendLine($"Rare={par.RarePrefered}");
+            Par.AppendLine($"SocPref={par.SocialPreference}");
+            Par.AppendLine($"IPrefN={par.InheritedPreferenceNoise}");
             Par.AppendLine($"NoisePref={par.NoisePreference}");
             Par.AppendLine($"UniMat={par.MatchUniform}");
-            Par.AppendLine($"MStrat={par.MatchStrategy}");
             Par.AppendLine($"Dial={par.NumDialects}");
             Par.AppendLine($"MDial={par.MaleDialects}");
             Par.AppendLine($"FEvo={par.FemaleEvolution}");

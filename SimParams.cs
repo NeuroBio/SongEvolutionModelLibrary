@@ -19,8 +19,11 @@ namespace SongEvolutionModelLibrary{
                     MaxChancetoForget, MinChancetoForget,
                     ListeningThreshold, FatherListeningThreshold,
                     EncounterSuccess, LearningPenalty, PercentDeath,
-                    DeathThreshold, ChickSurvival, InitialSurvival, RepertoireSizePreference,
-                    MatchPreference, FrequencyPreference, NoisePreference,
+
+                    DeathThreshold, ChickSurvival, InitialSurvival,
+                    RepertoireSizePreference, MatchPreference,
+                    FrequencyPreference, SocialPreference, NoisePreference,
+                    InheritedPreferenceNoise,
                     VerticalLearningCutOff,
                     SocialBred, SocialNotBred;
         public string MaleDialects, ConsensusStrategy, MatchStrategy;
@@ -58,6 +61,7 @@ namespace SongEvolutionModelLibrary{
         bool overLearn = false, int numTutorOverLearn = 3, bool logScale =true,
         float repertoireSizePreference = 1f, float matchPreference = 0f,
         float frequencyPreference = 0f, bool rarePrefered = true,
+        float socialPreference = 0f, float inheritedPreferenceNoise = 0f,
         int numDialects = 1, string maleDialects = "None", bool femaleEvolution = false,
         bool? saveMatch = null, bool? saveAccuracy  = null, bool matchUniform = true,
         bool? saveLearningThreshold  = null, bool? saveChancetoInvent  = null,
@@ -125,31 +129,33 @@ namespace SongEvolutionModelLibrary{
                     RepertoireSizePreference=float.Parse(Params[46], CultureInfo.InvariantCulture);
                     LogScale=System.Convert.ToBoolean(Params[47]);
                     MatchPreference=float.Parse(Params[48], CultureInfo.InvariantCulture);
-                    FrequencyPreference=float.Parse(Params[49], CultureInfo.InvariantCulture);
-                    RarePrefered=System.Convert.ToBoolean(Params[50]);
-                    NoisePreference=float.Parse(Params[51], CultureInfo.InvariantCulture);
-                    MatchUniform=System.Convert.ToBoolean(Params[52]);
-                    MatchStrategy=Params[53].Replace("\r", "");
-                    NumDialects=System.Convert.ToInt32(Params[54]);
-                    MaleDialects=Params[55].Replace("\r", "");
-                    FemaleEvolution=System.Convert.ToBoolean(Params[56]);
-                    ChooseMate=System.Convert.ToBoolean(Params[57]);
-                    SocialCues=System.Convert.ToBoolean(Params[58]);
-                    SocialBred=float.Parse(Params[59], CultureInfo.InvariantCulture);
-                    SocialNotBred=float.Parse(Params[60], CultureInfo.InvariantCulture);
-                    SaveMatch=System.Convert.ToBoolean(Params[61]);
-                    SaveAccuracy=System.Convert.ToBoolean(Params[62]);
-                    SaveLearningThreshold=System.Convert.ToBoolean(Params[63]);
-                    SaveChancetoInvent=System.Convert.ToBoolean(Params[64]);
-                    SaveChancetoForget=System.Convert.ToBoolean(Params[65]);
-                    SaveNames=System.Convert.ToBoolean(Params[66]);
-                    SaveAge=System.Convert.ToBoolean(Params[67]);
-                    SaveMSong=System.Convert.ToBoolean(Params[68]);
-                    SaveFSong=System.Convert.ToBoolean(Params[69]);
-                    //SimStep=System.Convert.ToInt32(Params[70]);
-                    NumSim=System.Convert.ToInt32(Params[71]);
-                    Seed=Params[72]=="NA\r"?
-                                0:System.Convert.ToInt32(Params[72]);
+                    MatchStrategy=Params[49].Replace("\r", "");
+                    FrequencyPreference=float.Parse(Params[50], CultureInfo.InvariantCulture);
+                    RarePrefered=System.Convert.ToBoolean(Params[51]);
+                    SocialPreference=float.Parse(Params[52], CultureInfo.InvariantCulture);
+                    InheritedPreferenceNoise=float.Parse(Params[53], CultureInfo.InvariantCulture);
+                    NoisePreference=float.Parse(Params[54], CultureInfo.InvariantCulture);
+                    MatchUniform=System.Convert.ToBoolean(Params[55]);
+                    NumDialects=System.Convert.ToInt32(Params[56]);
+                    MaleDialects=Params[57].Replace("\r", "");
+                    FemaleEvolution=System.Convert.ToBoolean(Params[58]);
+                    ChooseMate=System.Convert.ToBoolean(Params[59]);
+                    SocialCues=System.Convert.ToBoolean(Params[60]);
+                    SocialBred=float.Parse(Params[61], CultureInfo.InvariantCulture);
+                    SocialNotBred=float.Parse(Params[62], CultureInfo.InvariantCulture);
+                    SaveMatch=System.Convert.ToBoolean(Params[63]);
+                    SaveAccuracy=System.Convert.ToBoolean(Params[64]);
+                    SaveLearningThreshold=System.Convert.ToBoolean(Params[65]);
+                    SaveChancetoInvent=System.Convert.ToBoolean(Params[66]);
+                    SaveChancetoForget=System.Convert.ToBoolean(Params[67]);
+                    SaveNames=System.Convert.ToBoolean(Params[68]);
+                    SaveAge=System.Convert.ToBoolean(Params[69]);
+                    SaveMSong=System.Convert.ToBoolean(Params[70]);
+                    SaveFSong=System.Convert.ToBoolean(Params[71]);
+                    //SimStep=System.Convert.ToInt32(Params[72]);
+                    NumSim=System.Convert.ToInt32(Params[73]);
+                    Seed=Params[74]=="NA\r"?
+                                0:System.Convert.ToInt32(Params[74]);
             }else{
                 Rows = rows; Cols = cols; NumBirds = rows*cols; Steps = steps;
                 InitialSyllableRepertoireSize = initialSyllableRepertoireSize;
@@ -208,7 +214,8 @@ namespace SongEvolutionModelLibrary{
                 RepertoireSizePreference = repertoireSizePreference;
                 MatchPreference = matchPreference; ChooseMate = chooseMate;
                 FrequencyPreference = frequencyPreference; RarePrefered = rarePrefered;
-                NoisePreference = 1-(RepertoireSizePreference + MatchPreference + FrequencyPreference);
+                SocialPreference = socialPreference; InheritedPreferenceNoise = inheritedPreferenceNoise;
+                NoisePreference = 1-(RepertoireSizePreference + MatchPreference + FrequencyPreference + SocialPreference);
                 NumDialects = numDialects; MaleDialects = maleDialects;
                 FemaleEvolution = femaleEvolution; LogScale = logScale;
                 SaveMatch = TestRequirement(saveMatch, MatchPreference, femaleEvolution);
@@ -293,6 +300,7 @@ namespace SongEvolutionModelLibrary{
             CheckMin(PercentDeath,"PercentDeath",.01f);CheckMax(PercentDeath,"PercentDeath",.9f);
             CheckMin(DeathThreshold,"DeathThreshold",.0001f);CheckMax(DeathThreshold,"DeathThreshold",.2f*NumBirds);
             CheckMin(ChickSurvival,"ChickSurvival",.1f);CheckMax(ChickSurvival,"ChickSurvival");
+            CheckMin(InheritedPreferenceNoise,"InheritedPreferenceNoise",0f);CheckMax(InheritedPreferenceNoise,"InheritedPreferenceNoise", .5f);
 
             CheckTrait(InitialAccuracy, InheritedAccuracyNoise, MinAccuracy, MaxAccuracy, "Accuracy");
             CheckTrait(InitialLearningThreshold, InheritedLearningThresholdNoise, MinLearningThreshold, MaxLearningThreshold, "Learning Threshold", MaxAge);
@@ -300,8 +308,8 @@ namespace SongEvolutionModelLibrary{
             CheckTrait(InitialChancetoForget, InheritedChancetoForgetNoise, MinChancetoForget, MaxChancetoForget, "Chance Forget");
             
             //Complex Errors
-            if(RepertoireSizePreference + MatchPreference + FrequencyPreference > 1){
-                throw new System.ArgumentException("RepertoireSizePreference + MatchPreference + FrequencyPreference cannot exceed 1.");
+            if(RepertoireSizePreference + MatchPreference + FrequencyPreference + SocialPreference > 1){
+                throw new System.ArgumentException("RepertoireSizePreference + MatchPreference + FrequencyPreference + SocialPreference cannot exceed 1.");
             }
             if(InitialSyllableRepertoireSize*(1+2*PercentSyllableOverhang) > MaxSyllableRepertoireSize){
                 throw new System.ArgumentException("InitialSYllableRepertoireSize*(1+2*PercentSyllableOverhang) cannot be greater than MaxSyllableRepertoireSize.");
@@ -353,6 +361,7 @@ namespace SongEvolutionModelLibrary{
             if(EncounterSuccess==0){
                 Console.WriteLine("Warning: EncounterSuccess set to zero, so not oblique learning can occur.");
             }
+            
 
         }
         public void CheckMin(float trait, string traitName, float min=0f){
@@ -362,7 +371,7 @@ namespace SongEvolutionModelLibrary{
         }
         public void CheckMax(float trait, string traitName, float max=1f){
             if(trait > max){
-                throw new System.ArgumentException(string.Format("{0} cannot be less than {1}.", traitName,max));
+                throw new System.ArgumentException(string.Format("{0} cannot be More than {1}.", traitName,max));
             }
         }
         private void CheckTrait(float initial, float noise, float min, float max, string name, float absMax=1f){

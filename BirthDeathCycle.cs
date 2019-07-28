@@ -25,6 +25,11 @@ namespace SongEvolutionModelLibrary
                 pop.Age[NotVacant[i]] += 1;
             }
 
+            //Pick new mates
+            if(par.ChooseMate){
+                Songs.ChooseMates(par, pop);
+            }
+
             //Determine fathers and generate chicks
             int[] FatherInd = ChooseMaleFathers(par, pop, Vacant, NotVacant);
             for(int i=0;i<FatherInd.Length;i++){
@@ -36,8 +41,7 @@ namespace SongEvolutionModelLibrary
                 Learning.OverLearn(par, pop, Vacant, NotVacant);
             }
 
-            /*Allow for the female song to evolve and/or
-            let them pick new mates if old mate deceased*/
+            /*Allow the females to die and be replaced */
             if(par.FemaleEvolution){
                 int[] FemaleFathers = ChooseFemaleFathers(par, pop,
                                             Vacant, NotVacant, FatherInd);
@@ -45,10 +49,8 @@ namespace SongEvolutionModelLibrary
                     pop.FemaleSong[Vacant[i]] = pop.MaleSong[FatherInd[i]];
                 }
             }
-            if(par.ChooseMate){
-                Songs.ChooseMates(par, pop);
-            } 
-            if(par.SocialCues){
+             
+            if(par.SocialCues || par.SocialPreference > 0){
                 HashSet<int> Fathers = FatherInd.ToHashSet();
                 for(int i=0;i<par.NumBirds;i++){
                     if(Fathers.Contains(i)){
@@ -245,10 +247,11 @@ namespace SongEvolutionModelLibrary
             float[] RepBonus = CalculateRepertoireSizeBonus(par, pop, usableMales);
             float[] MatBonus = CalculateMatchBonus(par, pop, usableMales);
             float[] FreqBonus = CalculateFrequencyBonus(par, pop, usableMales);
+            float[] SocialBonus = CalculateSocialBonus(par, pop, usableMales);
             
             //Merge
             for(int i=0;i<usableMales.Count;i++){
-                FullBonus[i] = NoiseBonus[i] + RepBonus[i] + MatBonus[i] + FreqBonus[i];
+                FullBonus[i] = NoiseBonus[i] + RepBonus[i] + MatBonus[i] + FreqBonus[i] +SocialBonus[i];
                 if(FullBonus[i] < .001f){FullBonus[i] = .001f;}
             }
 
@@ -341,6 +344,30 @@ namespace SongEvolutionModelLibrary
             }else{FreqBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}
             return(FreqBonus);
         }
+        private static float[] CalculateSocialBonus(SimParams par, Population pop,
+        List<int> usableMales){
+            float[] SocialBonus = new float[usableMales.Count];
+            if(par.SocialPreference != 0){
+                float[] Soc = new float[usableMales.Count];
+                for(int i=0;i<usableMales.Count;i++){
+                    Soc[i] = pop.Bred[usableMales[i]];
+                }
+                float Worst = Soc.Min();
+                float Best = Soc.Max();
+                if(Worst == Best){
+                  SocialBonus = Enumerable.Repeat(par.SocialPreference, usableMales.Count).ToArray();  
+                }else{
+                    float Fraction = 1f/(Best - Worst);
+                    for(int i=0;i<usableMales.Count;i++){
+                        SocialBonus[i] = ((Soc[i] - Worst)*Fraction)*par.SocialPreference;
+                    }
+
+                }
+            }else{SocialBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}
+            return(SocialBonus);
+        }
+        
+        
         //Reset for next run        
         private static Population UpdateDeathProbabilities(SimParams par, Population pop, 
         int[] fatherInd){
