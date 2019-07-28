@@ -23,7 +23,7 @@ namespace SongEvolutionModelLibrary{
                     MatchPreference, FrequencyPreference, NoisePreference,
                     VerticalLearningCutOff,
                     SocialBred, SocialNotBred;
-        public string MaleDialects, ConsensusStrategy;
+        public string MaleDialects, ConsensusStrategy, MatchStrategy;
         public bool OverLearn, FemaleEvolution, SaveMatch, SaveAccuracy,
                     SaveLearningThreshold, SaveChancetoInvent, SaveChancetoForget,
                     SaveNames, SaveAge, MatchUniform, ObliqueLearning,
@@ -53,7 +53,8 @@ namespace SongEvolutionModelLibrary{
         float encounterSuccess = .95f, float learningPenalty = .75f, float deathThreshold = 1,
         bool ageDeath = true, float percentDeath = .1f, bool saveMSong = false,
         float chickSurvival = .3f, bool localBreeding = false, bool localTutor = false,
-        string learningStrategy = "Add", string consensusStrategy = "Conform", int numTutorConsensusStrategy = 8,
+        string learningStrategy = "Add", string consensusStrategy = "Conform",
+        string matchStrategy="Match", int numTutorConsensusStrategy = 8,
         bool overLearn = false, int numTutorOverLearn = 3, bool logScale =true,
         float repertoireSizePreference = 1f, float matchPreference = 0f,
         float frequencyPreference = 0f, bool rarePrefered = true,
@@ -128,7 +129,7 @@ namespace SongEvolutionModelLibrary{
                     RarePrefered=System.Convert.ToBoolean(Params[50]);
                     NoisePreference=float.Parse(Params[51], CultureInfo.InvariantCulture);
                     MatchUniform=System.Convert.ToBoolean(Params[52]);
-                    //MatchScale=System.Convert.ToInt32(Params[53]);
+                    MatchStrategy=Params[53].Replace("\r", "");
                     NumDialects=System.Convert.ToInt32(Params[54]);
                     MaleDialects=Params[55].Replace("\r", "");
                     FemaleEvolution=System.Convert.ToBoolean(Params[56]);
@@ -171,7 +172,7 @@ namespace SongEvolutionModelLibrary{
                 InheritedChancetoForgetNoise = inheritedChancetoForgetNoise;
                 ListeningThreshold = listeningThreshold;
                 FatherListeningThreshold = fatherListeningThreshold;
-                EncounterSuccess= encounterSuccess;
+                EncounterSuccess = encounterSuccess; MatchStrategy = matchStrategy;
                 LearningPenalty = learningPenalty; DeathThreshold = deathThreshold;
                 AgeDeath = ageDeath; PercentDeath=percentDeath;
                 ChickSurvival = chickSurvival; MatchUniform = matchUniform;
@@ -200,8 +201,8 @@ namespace SongEvolutionModelLibrary{
                     }
                 }
                 SocialCues = socialCues;
-                SocialBred=socialBred;
-                SocialNotBred=socialNotBred;
+                SocialBred = socialBred;
+                SocialNotBred = socialNotBred;
                 NumTutorConsensusStrategy = numTutorConsensusStrategy;
                 OverLearn = overLearn; NumTutorOverLearn = numTutorOverLearn;
                 RepertoireSizePreference = repertoireSizePreference;
@@ -324,8 +325,11 @@ namespace SongEvolutionModelLibrary{
             if(MaleDialects != "None" && MaleDialects != "Similar" && MaleDialects != "Same"){
                 throw new System.ArgumentException("MaleDialects must be None, Similar, or Same.");
             }
-             if(ConsensusStrategy != "Conform" && ConsensusStrategy != "AllNone" && ConsensusStrategy != "Percentage"){
+            if(ConsensusStrategy != "Conform" && ConsensusStrategy != "AllNone" && ConsensusStrategy != "Percentage"){
                 throw new System.ArgumentException("ConsensusStrategy must be Conform, AllNone, or Percentage.");
+            }
+            if(MatchStrategy != "Match" && MatchStrategy != "Presence"){
+                throw new System.ArgumentException("MatchStrategyStrategy must be Match or Presence.");
             }
             if(MatchPreference == 0  && SaveMatch == false && SaveFSong == true){
                 throw new System.ArgumentException("Cannot save female song unless it is generated. It is not generated unless 1) MatchPrefer > 0, 2) FemaleEvolve == TRUE,or 3) SaveMatch == TRUE.");

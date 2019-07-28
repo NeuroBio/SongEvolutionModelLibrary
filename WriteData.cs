@@ -173,7 +173,7 @@ namespace SongEvolutionModelLibrary
             Par.AppendLine($"Rare={par.RarePrefered}");
             Par.AppendLine($"NoisePref={par.NoisePreference}");
             Par.AppendLine($"UniMat={par.MatchUniform}");
-            Par.AppendLine($"MScl=1");
+            Par.AppendLine($"MStrat={par.MatchStrategy}");
             Par.AppendLine($"Dial={par.NumDialects}");
             Par.AppendLine($"MDial={par.MaleDialects}");
             Par.AppendLine($"FEvo={par.FemaleEvolution}");

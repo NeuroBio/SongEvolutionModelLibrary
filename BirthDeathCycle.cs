@@ -243,8 +243,8 @@ namespace SongEvolutionModelLibrary
             float[] FullBonus = new float[usableMales.Count];
             float[] NoiseBonus = Enumerable.Repeat(par.NoisePreference, usableMales.Count).ToArray();
             float[] RepBonus = CalculateRepertoireSizeBonus(par, pop, usableMales);
-            float[] FreqBonus = CalculateMatchBonus(par, pop, usableMales);
-            float[] MatBonus = CalculateFrequencyBonus(par, pop, usableMales);
+            float[] MatBonus = CalculateMatchBonus(par, pop, usableMales);
+            float[] FreqBonus = CalculateFrequencyBonus(par, pop, usableMales);
             
             //Merge
             for(int i=0;i<usableMales.Count;i++){
@@ -287,9 +287,8 @@ namespace SongEvolutionModelLibrary
         List<int> usableMales){
             float[] MatBonus = new float[usableMales.Count];
             if(par.MatchPreference != 0){
-                float Bonus;
                 for(int i=0;i<usableMales.Count;i++){
-                    Bonus = par.MatchPreference*pop.Match[usableMales[i]];
+                    MatBonus[i] = par.MatchPreference*pop.Match[usableMales[i]];
                 }
             }else{MatBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}
             return(MatBonus);
@@ -309,11 +308,11 @@ namespace SongEvolutionModelLibrary
                 float[] FinalSyllableCounts = new float[par.MaxSyllableRepertoireSize];
                 if(par.RarePrefered){
                     for(int i=0;i<RawSyllableCounts.Length;i++){
-                        FinalSyllableCounts[i] = 1 - RawSyllableCounts[i]/(float)par.NumBirds; 
+                        FinalSyllableCounts[i] = 1 - RawSyllableCounts[i]/(float)usableMales.Count; 
                     }
                 }else{
                     for(int i=0;i<RawSyllableCounts.Length;i++){
-                        FinalSyllableCounts[i] = RawSyllableCounts[i]/(float)par.NumBirds; 
+                        FinalSyllableCounts[i] = RawSyllableCounts[i]/(float)usableMales.Count; 
                     }
                 }
                 
@@ -336,7 +335,7 @@ namespace SongEvolutionModelLibrary
                 }else{
                     float Fraction = 1f/(Best - Worst);
                     for(int i=0;i<usableMales.Count;i++){
-                        Rarity[i] = ((Rarity[i] - Worst)*Fraction)*par.FrequencyPreference;
+                        FreqBonus[i] = ((Rarity[i] - Worst)*Fraction)*par.FrequencyPreference;
                     }
                 }
             }else{FreqBonus = Enumerable.Repeat(0f, usableMales.Count).ToArray();}

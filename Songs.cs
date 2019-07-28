@@ -154,12 +154,18 @@ namespace SongEvolutionModelLibrary
         public static float GetMatch(SimParams par, List<int> maleSong,
         List<int> femaleSong){
             //Calculate the match
-            IEnumerable<int> Compare = femaleSong.Intersect(maleSong);
-            float FSyls = femaleSong.Count;
-            float Missing = FSyls-Compare.Count();
-            float Extra = Math.Max(maleSong.Count-FSyls,0);
-            float Mistakes = ((Extra+Missing)/FSyls);
-            float Match = Math.Max(1f-Mistakes,0);
+            float Match;
+            if(par.MatchStrategy == "Match"){
+                IEnumerable<int> Compare = femaleSong.Intersect(maleSong);
+                float FSyls = femaleSong.Count;
+                float Missing = FSyls-Compare.Count();
+                float Extra = Math.Max(maleSong.Count-FSyls,0);
+                float Mistakes = ((Extra+Missing)/FSyls);
+                Match = Math.Max(1f-Mistakes,0);
+            }else{
+                IEnumerable<int> Compare = femaleSong.Intersect(maleSong);
+                Match = Compare.Count()/(float)femaleSong.Count;
+            }
             return(Match);
         }
         public static Population ChooseMates(SimParams par, Population pop){
