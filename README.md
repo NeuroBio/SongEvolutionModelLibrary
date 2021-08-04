@@ -13,3 +13,6 @@ Users wishing to extend the model should see Section 3.
 
 ## Web App (implements the C# version of the library)
 https://neurobio.github.io/SEMWebApp/release/SEMWebApp/dist/
+
+## R library version
+-[Repository](https://github.com/NeuroBio/SEM_R_Package)
