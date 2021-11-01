@@ -8,7 +8,7 @@ The Walkthrough explains the logic behind the model (Section 1), a Vignette to s
 extensive function documentations (Section 3).  New users should focus on Sections 1 and 2.4.  Users wishing to use the premade
 programs should see the programs repository.  Users wishing to make their own programs should see Section 2.5.
 Users wishing to extend the model should see Section 3.
--	[Walkthrough](Csharp_WalkThrough.pdf)
+-	[Walkthrough](https://github.com/NeuroBio/SongEvolutionModelLibrary/blob/master/Csharp_Walkthrough.pdf)
 -	[Programs]( https://github.com/NeuroBio/SongEvolutionModelPrograms)
 
 ## Web App (implements the C# version of the library)
