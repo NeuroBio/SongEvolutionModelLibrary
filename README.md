@@ -12,6 +12,7 @@ Users wishing to extend the model should see Section 3.
 -	[Programs]( https://github.com/NeuroBio/SongEvolutionModelPrograms)
 
 ## Web App (implements the C# version of the library)
+![web app preview](https://github.com/NeuroBio/Portfolio/blob/main/assets/img/portfolio/project5.png)
 https://neurobio.github.io/SEMWebApp/release/SEMWebApp/dist/
 
 ## R library version
